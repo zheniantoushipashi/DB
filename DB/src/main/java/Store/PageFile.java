@@ -1,6 +1,7 @@
 package Store;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import javax.crypto.Cipher;
 
@@ -46,6 +47,205 @@ public final class PageFile {
     }
     
     //get  a  page  from  a  file
+    PageBuffer get(long pageId) throws IOException{
+    	PageBuffer node = inTxn.get(pageId);
+    	 if (node != null) {
+             inTxn.remove(pageId);
+             inUse.put(pageId, node);
+             return node;
+         }
+    	 node = dirty.get(pageId);
+         if (node != null) {
+             dirty.remove(pageId);
+             inUse.put(pageId, node);
+             return node;
+         } 
+         
+         if (inUse.get(pageId) != null) {
+             throw new Error("同一个页面get两次 " + pageId);
+         }
+         
+       //read node from file
+         if (cipherOut == null) {
+             node = new PageBuffer(pageId,storage.read(pageId));
+         } 
+         
+         inUse.put(pageId, node);
+         node.setClean();
+         return node;
+    	
+    }
+    
+   void freePage(final long pageId, final boolean  isDirty) throws IOException{
+	   final PageBuffer page = inUse.remove(pageId);
+	   if (!page.isDirty() && isDirty)
+           page.setDirty();
+
+       if (page.isDirty()) {
+           dirty.put(pageId, page);
+       }
+	   
+   }
+    
+   void discard(PageBuffer page) {
+       long key = page.getPageId();
+       inUse.remove(key);
+   }
+   
+   /**
+    * Commits the current transaction by flushing all dirty buffers
+    * to disk.
+    */
+   void commit() throws IOException {
+      
+
+       //sort pages by IDs
+       long[] pageIds = new long[dirty.size()];
+       int c = 0;
+       for (Iterator<PageIo> i = dirty.valuesIterator(); i.hasNext(); ) {
+           pageIds[c] = i.next().getPageId();
+           c++;
+       }
+       Arrays.sort(pageIds);
+
+       for (long pageId : pageIds) {
+           PageIo node = dirty.get(pageId);
+
+           // System.out.println("node " + node + " map size now " + dirty.size());
+           if (transactionsDisabled) {
+               if(cipherIn !=null)                    
+                  storage.write(node.getPageId(), ByteBuffer.wrap(Utils.encrypt(cipherIn, node.getData())));
+               else
+                  storage.write(node.getPageId(),node.getData());
+               node.setClean();
+           } else {
+               txnMgr.add(node);
+               inTxn.put(node.getPageId(), node);
+           }
+       }
+       dirty.clear();
+       if (!transactionsDisabled) {
+           txnMgr.commit();
+       }
+   }
+
+
+   /**
+    * Rollback the current transaction by discarding all dirty buffers
+    */
+   void rollback() throws IOException {
+       // debugging...
+       if (!inUse.isEmpty()) {
+           showList(inUse.valuesIterator());
+           throw new Error("in use list not empty at rollback time ("
+                   + inUse.size() + ")");
+       }
+       //  System.out.println("rollback...");
+       dirty.clear();
+
+       txnMgr.synchronizeLogFromDisk();
+
+       if (!inTxn.isEmpty()) {
+           showList(inTxn.valuesIterator());
+           throw new Error("in txn list not empty at rollback time ("
+                   + inTxn.size() + ")");
+       }
+       ;
+   }
+
+   /**
+    * Commits and closes file.
+    */
+   void close() throws IOException {
+       if (!dirty.isEmpty()) {
+           commit();
+       }
+
+       if(!transactionsDisabled && txnMgr!=null){
+           txnMgr.shutdown();
+       }
+
+       if (!inTxn.isEmpty()) {
+           showList(inTxn.valuesIterator());
+           throw new Error("In transaction not empty");
+       }
+
+       // these actually ain't that bad in a production release
+       if (!dirty.isEmpty()) {
+           System.out.println("ERROR: dirty pages at close time");
+           showList(dirty.valuesIterator());
+           throw new Error("Dirty pages at close time");
+       }
+       if (!inUse.isEmpty()) {
+           System.out.println("ERROR: inUse pages at close time");
+           showList(inUse.valuesIterator());
+           throw new Error("inUse pages  at close time");
+       }
+
+       storage.sync();
+       storage.forceClose();
+   }
+
+
+   /**
+    * Force closing the file and underlying transaction manager.
+    * Used for testing purposed only.
+    */
+   void forceClose() throws IOException {
+       if(!transactionsDisabled){
+           txnMgr.forceClose();
+       }
+       storage.forceClose();
+   }
+
+   /**
+    * Prints contents of a list
+    */
+   private void showList(Iterator<PageIo> i) {
+       int cnt = 0;
+       while (i.hasNext()) {
+           System.out.println("elem " + cnt + ": " + i.next());
+           cnt++;
+       }
+   }
+
+   /**
+    * Synchs a node to disk. This is called by the transaction manager's
+    * synchronization code.
+    */
+   void synch(PageIo node) throws IOException {
+       ByteBuffer data = node.getData();
+       if (data != null) {
+           if(cipherIn!=null)
+               storage.write(node.getPageId(), ByteBuffer.wrap(Utils.encrypt(cipherIn, data)));
+           else
+               storage.write(node.getPageId(),  data);
+       }
+   }
+
+   /**
+    * Releases a node from the transaction list, if it was sitting
+    * there.
+    */
+   void releaseFromTransaction(PageIo node)
+           throws IOException {
+       inTxn.remove(node.getPageId());
+   }
+
+   /**
+    * Synchronizes the file.
+    */
+   void sync() throws IOException {
+       storage.sync();
+   }
+
+   public int getDirtyPageCount() {
+       return dirty.size();
+   }
+
+   public void deleteAllFiles() throws IOException {
+       storage.deleteAllFiles();
+   }
     
 
 	
