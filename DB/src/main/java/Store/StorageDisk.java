@@ -56,7 +56,6 @@ class StorageDisk implements Storage {
             c.set(fileNumber, ret);
         }
         return ret;
-
     }
 
 
