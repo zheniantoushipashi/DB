@@ -7,6 +7,9 @@ import java.nio.ByteBuffer;
 
 public interface Storage {
 
+	
+	static final byte[] CLEAN_DATA = new byte[Storage.PAGE_SIZE];
+	final static long PAGES_PER_FILE = (1024*1024*1024)>>>Storage.PAGE_SIZE_SHIFT; 
 	 /**
      * Bite shift used to calculate page size.
      * If you want to modify page size, do it here.
