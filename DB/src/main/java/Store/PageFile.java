@@ -2,10 +2,14 @@ package Store;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import javax.crypto.Cipher;
 
 public final class PageFile {
+	
+	 final PageTransactionManager txnMgr;
 	/**
      * Pages currently locked for read/update ops. When released the page goes
      * to the dirty or clean list, depending on a flag.  The file header page  is
@@ -44,7 +48,14 @@ public final class PageFile {
         this.cipherOut = cipherOut;
         this.transactionsDisabled = transactionsDisabled;
         this.storage = new StorageDisk(fileName,readonly,lockingDisabled);
+        if (!readonly && !transactionsDisabled) {
+            txnMgr = new PageTransactionManager(this, storage, cipherIn, cipherOut);
+        } else {
+            txnMgr = null;
+        }
     }
+    
+    
     
     //get  a  page  from  a  file
     PageBuffer get(long pageId) throws IOException{
@@ -102,14 +113,14 @@ public final class PageFile {
        //sort pages by IDs
        long[] pageIds = new long[dirty.size()];
        int c = 0;
-       for (Iterator<PageIo> i = dirty.valuesIterator(); i.hasNext(); ) {
+       for (Iterator<PageBuffer> i = dirty.valuesIterator(); i.hasNext(); ) {
            pageIds[c] = i.next().getPageId();
            c++;
        }
        Arrays.sort(pageIds);
 
        for (long pageId : pageIds) {
-           PageIo node = dirty.get(pageId);
+           PageBuffer node = dirty.get(pageId);
 
            // System.out.println("node " + node + " map size now " + dirty.size());
            if (transactionsDisabled) {
@@ -201,7 +212,7 @@ public final class PageFile {
    /**
     * Prints contents of a list
     */
-   private void showList(Iterator<PageIo> i) {
+   private void showList(Iterator<PageBuffer> i) {
        int cnt = 0;
        while (i.hasNext()) {
            System.out.println("elem " + cnt + ": " + i.next());
@@ -213,7 +224,7 @@ public final class PageFile {
     * Synchs a node to disk. This is called by the transaction manager's
     * synchronization code.
     */
-   void synch(PageIo node) throws IOException {
+   void synch(PageBuffer node) throws IOException {
        ByteBuffer data = node.getData();
        if (data != null) {
            if(cipherIn!=null)
@@ -227,7 +238,7 @@ public final class PageFile {
     * Releases a node from the transaction list, if it was sitting
     * there.
     */
-   void releaseFromTransaction(PageIo node)
+   void releaseFromTransaction(PageBuffer node)
            throws IOException {
        inTxn.remove(node.getPageId());
    }

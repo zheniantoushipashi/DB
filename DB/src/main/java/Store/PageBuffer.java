@@ -1,6 +1,7 @@
 package Store;
 
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -35,6 +36,44 @@ public final class PageBuffer {
 	        }
 
 	    }
+	    
+	    /**
+	     * Increments transaction count for this block, to signal that this
+	     * block is in the log but not yet in the data file. The method also
+	     * takes a snapshot so that the data may be modified in new transactions.
+	     */
+	    void incrementTransactionCount() {
+	        transactionCount++;
+	    }
+
+	    /**
+	     * Decrements transaction count for this block, to signal that this
+	     * block has been written from the log to the data file.
+	     */
+	    void decrementTransactionCount() {
+	        transactionCount--;
+	        if (transactionCount < 0)
+	            throw new Error("transaction count on page "
+	                    + getPageId() + " below zero!");
+
+	    }
+
+	    
+	   
+
+	    public void writeExternal(DataOutput out, Cipher cipherIn) throws IOException {
+	        out.writeLong(pageId);
+	        out.write(Utils.encrypt(cipherIn, data.array()));
+	    }
+	    
+	    /**
+	     * Returns true if the block is still dirty with respect to the
+	     * transaction log.
+	     */
+	    boolean isInTransaction() {
+	        return transactionCount != 0;
+	    }
+
 	    
 	    ByteBuffer getData() {
 	        return data;
