@@ -10,7 +10,7 @@ public class PageFileTest extends TestCase {
      * Test addition of record 0
      */
     public  void   testAddCharacter() throws Exception{
-    	String  filename="~";
+    	String  filename="storeFile1";
     	PageFile  file = new PageFile(filename);
     	PageBuffer  data = file.get(0);
     	data.writeByte(14, (byte)'b');
