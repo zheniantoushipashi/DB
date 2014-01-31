@@ -18,6 +18,8 @@ public class PageFileTest extends TestCase {
     	file.close();
     	PageFile  file1 = new PageFile(filename);
         PageBuffer	  data1 = file1.get(0);
+        System.out.println((char)data1.readByte(14));
+    
     	assertEquals((byte)'b', data1.readByte(14));
     	file1.release(0, false);
     	file1.close();
