@@ -55,10 +55,12 @@ public final class PageFile {
         }
     }
     
-    
+    public PageFile(String filename) throws IOException {
+        this(filename, false, false, null, null,false,false);
+    }
     
     //get  a  page  from  a  file
-    PageBuffer get(long pageId) throws IOException{
+   public  PageBuffer get(long pageId) throws IOException{
     	PageBuffer node = inTxn.get(pageId);
     	 if (node != null) {
              inTxn.remove(pageId);
@@ -87,6 +89,43 @@ public final class PageFile {
     	
     }
     
+   /**
+    * Releases a page.
+    *
+    * @param pageId The record number to release.
+    * @param isDirty If true, the page was modified since the get().
+    */
+   public   void release(final long pageId, final boolean isDirty) throws IOException {
+
+       final PageBuffer page = inUse.remove(pageId);
+       if (!page.isDirty() && isDirty)
+           page.setDirty();
+
+       if (page.isDirty()) {
+           dirty.put(pageId, page);
+       } else if (!transactionsDisabled && page.isInTransaction()) {
+           inTxn.put(pageId, page);
+       }
+   }
+   
+   /**
+    * Releases a page.
+    *
+    * @param page The page to release.
+    */
+  public   void release(final PageBuffer page) throws IOException {
+       final long key = page.getPageId();
+       inUse.remove(key);
+       if (page.isDirty()) {
+           // System.out.println( "Dirty: " + key + page );
+           dirty.put(key, page);
+       } else if (!transactionsDisabled && page.isInTransaction()) {
+           inTxn.put(key, page);
+       }
+   }
+   
+   
+   
    void freePage(final long pageId, final boolean  isDirty) throws IOException{
 	   final PageBuffer page = inUse.remove(pageId);
 	   if (!page.isDirty() && isDirty)
@@ -167,7 +206,7 @@ public final class PageFile {
    /**
     * Commits and closes file.
     */
-   void close() throws IOException {
+  public   void close() throws IOException {
        if (!dirty.isEmpty()) {
            commit();
        }
