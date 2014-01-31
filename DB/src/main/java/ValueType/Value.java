@@ -1,4 +1,9 @@
 package ValueType;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 public  abstract class Value {
 	
 	 /**
@@ -213,6 +218,128 @@ public  abstract class Value {
         return o1 > o2 ? t1 : t2;
     }
 
+	public int getInt() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+
+    public Boolean getBoolean() {
+        return ((ValueBoolean) convertTo(Value.BOOLEAN)).getBoolean();
+    }
+
+    public Date getDate() {
+        return ((ValueDate) convertTo(Value.DATE)).getDate();
+    }
+
+    public Time getTime() {
+        return ((ValueTime) convertTo(Value.TIME)).getTime();
+    }
+
+    public Timestamp getTimestamp() {
+        return ((ValueTimestamp) convertTo(Value.TIMESTAMP)).getTimestamp();
+    }
+
+    public byte[] getBytes() {
+        return ((ValueBytes) convertTo(Value.BYTES)).getBytes();
+    }
+
+    public byte[] getBytesNoCopy() {
+        return ((ValueBytes) convertTo(Value.BYTES)).getBytesNoCopy();
+    }
+
+    public byte getByte() {
+        return ((ValueByte) convertTo(Value.BYTE)).getByte();
+    }
+
+    public short getShort() {
+        return ((ValueShort) convertTo(Value.SHORT)).getShort();
+    }
+
+    public BigDecimal getBigDecimal() {
+        return ((ValueDecimal) convertTo(Value.DECIMAL)).getBigDecimal();
+    }
+
+    public double getDouble() {
+        return ((ValueDouble) convertTo(Value.DOUBLE)).getDouble();
+    }
+
+    public float getFloat() {
+        return ((ValueFloat) convertTo(Value.FLOAT)).getFloat();
+    }
+
+    public int getInt() {
+        return ((ValueInt) convertTo(Value.INT)).getInt();
+    }
+
+    public long getLong() {
+        return ((ValueLong) convertTo(Value.LONG)).getLong();
+    }
+
+    
+    private static byte convertToByte(long x) {
+      
+        return (byte) x;
+    }
+
+    private static short convertToShort(long x) {
+      
+        return (short) x;
+    }
+
+    private static int convertToInt(long x) {
+      
+        return (int) x;
+    }
+
+    private static long convertToLong(double x) {
+       
+        return Math.round(x);
+    }
+
+    private static long convertToLong(BigDecimal x) {
+      
+        return x.setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+    }
+
+	
+	
+	 /**
+     * Compare a value to the specified type.
+     *
+     * @param targetType the type of the returned value
+     * @return the converted value
+     */
+	 public Value convertTo(int targetType) {
+		 
+     switch (targetType){
+	 case INT: {
+         switch (getType()) {
+         case BOOLEAN:
+             return Int.get(getBoolean().booleanValue() ? 1 : 0);
+         case BYTE:
+             return Int.get(getByte());
+         case SHORT:
+             return Int.get(getShort());
+         case LONG:
+             return Int.get(convertToInt(getLong()));
+         case DECIMAL:
+             return Int.get(convertToInt(convertToLong(getBigDecimal())));
+         case DOUBLE:
+             return Int.get(convertToInt(convertToLong(getDouble())));
+         case FLOAT:
+             return Int.get(convertToInt(convertToLong(getFloat())));
+         case BYTES:
+             return Int.get((int) Long.parseLong(getString(), 16));
+         }
+         break;
+      
+	    }
+      }
+	 
+	 }
+
+   
     
     
 
