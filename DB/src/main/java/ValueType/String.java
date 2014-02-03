@@ -1,10 +1,10 @@
 package ValueType;
 
-public class Int  extends Value {
+public class String   extends Value {
 
 	@Override
 	public int getType() {
-		return Value.INT;
+		return Value.STRING;
 	}
 
 	@Override
