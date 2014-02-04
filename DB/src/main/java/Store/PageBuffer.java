@@ -4,6 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 
 import javax.crypto.Cipher;
 
@@ -11,12 +14,13 @@ import ValueType.Value;
 
 public final class PageBuffer {
 	private long pageId;
-	private ByteBuffer data;
+	public ByteBuffer data;
 	private boolean dirty = false;
 	private int transactionCount = 0;
 
 	public PageBuffer() {
 		// empty
+
 	}
 
 	public PageBuffer(long pageId, ByteBuffer data) {
@@ -25,7 +29,6 @@ public final class PageBuffer {
 	}
 
 	PageBuffer(long pageId, byte[] data) {
-
 		this.pageId = pageId;
 		this.data = ByteBuffer.wrap(data);
 	}
@@ -76,7 +79,7 @@ public final class PageBuffer {
 		return transactionCount != 0;
 	}
 
-	ByteBuffer getData() {
+    public	ByteBuffer getData() {
 		return data;
 	}
 
@@ -154,6 +157,34 @@ public final class PageBuffer {
 		data.putInt(pos, value);
 	}
 
+	public void writeByteArray(byte[] buf, int srcOffset, int offset, int length) {
+		setDirty();
+		data.rewind();
+		data.position(offset);
+		data.put(buf, srcOffset, length);
+	}
+
+	public void writeString(String str) {
+		setDirty();
+		data.put(str.getBytes(Charset.forName("UTF-8")), 0, str.getBytes().length);
+	}
+
+	public String readString(ByteBuffer buffer) {
+		Charset charset = null;
+		CharsetDecoder decoder = null;
+		CharBuffer charBuffer = null;
+		try {
+			charset = Charset.forName("UTF-8");
+			decoder = charset.newDecoder();
+			// charBuffer = decoder.decode(buffer);//用这个的话，只能输出来一次结果，第二次显示为空
+			charBuffer = decoder.decode(buffer.asReadOnlyBuffer());
+			return charBuffer.toString();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return "";
+		}
+	}
+
 	/**
 	 * Reads a long from the indicated position
 	 */
@@ -228,13 +259,6 @@ public final class PageBuffer {
 		data.rewind();
 		data.get(d, 0, Storage.PAGE_SIZE);
 		return d;
-	}
-
-	public void writeByteArray(byte[] buf, int srcOffset, int offset, int length) {
-		setDirty();
-		data.rewind();
-		data.position(offset);
-		data.put(buf, srcOffset, length);
 	}
 
 	private static int getVarIntLen(int x) {

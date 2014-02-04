@@ -1,19 +1,15 @@
 package structure;
 import Store.PageBuffer;
 import ValueType.Value;
-//代表数据库表格的的一行
-
 public class Row {
     private  long  key;
-    private  String  searchColumn;
-    public String getSearchColumn() {
+    private  Value  searchColumn;
+    public Value getSearchColumn() {
 		return searchColumn;
 	}
-
-	public void setSearchColumn(String searchColumn) {
+	public void setSearchColumn(Value searchColumn) {
 		this.searchColumn = searchColumn;
 	}
-
 	private  final  Value[]  data;
     private  boolean  deleted;
     public   Row(Value[] data){
@@ -41,5 +37,21 @@ public class Row {
         }
         return size;
     }
+    public  int  getColumnCount(){
+    	return data.length;
+    }
+    
+    public boolean isEmpty() {
+        return data == null;
+    }
+    
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public Value[] getValueList() {
+        return data;
+    }
+    
     
 }
