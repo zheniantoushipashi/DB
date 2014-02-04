@@ -1,10 +1,20 @@
 package ValueType;
 
-public class String   extends Value {
+public class MyBoolean extends Value {
+
+	private final Boolean value;
+
+	private MyBoolean(boolean value) {
+		this.value = Boolean.valueOf(value);
+	}
+	@Override
+    public Boolean getBoolean() {
+        return value;
+    }
 
 	@Override
 	public int getType() {
-		return Value.STRING;
+		return Value.BOOLEAN;
 	}
 
 	@Override

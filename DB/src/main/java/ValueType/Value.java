@@ -27,25 +27,22 @@ public abstract class Value {
 	public static final int STRING = 13;
 
 	public abstract int getType();
-	
-	
-	public abstract String getString();
 
-	    /**
-	     * Get the value as an object.
-	     *
-	     * @return the object
-	     */
-    public abstract Object getObject();
-	    
-	    
+	public abstract java.lang.String getString();
+
+	/**
+	 * Get the value as an object.
+	 * 
+	 * @return the object
+	 */
+	public abstract Object getObject();
+
 	public abstract int hashCode();
 
 	@Override
-	public abstract boolean equals(Object other);  
+	public abstract boolean equals(Object other);
 
-	
-	static  int getOrder(int type) {
+	static int getOrder(int type) {
 		switch (type) {
 		case NULL:
 			return 2;
@@ -57,25 +54,44 @@ public abstract class Value {
 			return 21;
 		case DATE:
 			return 31;
-			
+
 		case BYTES:
 			return 40;
 		default:
-			return  -1; 
+			return -1;
 		}
 	}
+
+	public static int getHigherOrder(int t1, int t2) {
+		if (t1 == t2) {
+			return t1;
+		}
+		int o1 = getOrder(t1);
+		int o2 = getOrder(t2);
+		return o1 > o2 ? t1 : t2;
+	}
+
+	public int getInt() {
+		return ((MyInt) convertType(Value.INT)).getInt();
+	}
+
+	public byte[] getBytesNoCopy() {
+        return ((MyBytes) convertType(Value.BYTES)).getBytesNoCopy();
+    }
+	public byte[] getBytes() {
+		return ((MyBytes) convertType(Value.BYTES)).getBytes();
+	}
+
+	public byte getByte() {
+		return ((MyByte) convertType(Value.BYTE)).getByte();
+	}
 	
-	 public static int getHigherOrder(int t1, int t2) {
-	        if (t1 == t2) {
-	            return t1;
-	        }
-	        int o1 = getOrder(t1);
-	        int o2 = getOrder(t2);
-	        return o1 > o2 ? t1 : t2;
+	 public Boolean getBoolean() {
+	        return ((MyBoolean) convertType(Value.BOOLEAN)).getBoolean();
 	    }
-	
-	public  static  convertType(TargetType){
-		  if(getType() == targetType){
+
+	public  Value  convertType(int  TargetType){
+		  if(getType() == TargetType){
 			  return  this;
 		  }
 		  switch(TargetType){
@@ -97,8 +113,5 @@ public abstract class Value {
 		
 		
 	}
-	
-	
-	
 
 }

@@ -1,12 +1,22 @@
 package ValueType;
 
-public class Int  extends Value {
+public class MyByte  extends  Value{
 
 	@Override
 	public int getType() {
-		return Value.INT;
+		return  Value.BYTE;
 	}
 
+	private final byte value;
+
+    private MyByte(byte value) {
+        this.value = value;
+    }
+    
+    @Override
+    public byte getByte() {
+        return value;
+    }
 	@Override
 	public String getString() {
 		// TODO Auto-generated method stub
