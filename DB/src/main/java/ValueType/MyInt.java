@@ -1,21 +1,27 @@
 package ValueType;
 
-public class MyInt  extends Value {
+public class MyInt extends Value {
 
-	private  final  int value;
-	
-	private  MyInt(int  value){
-		
-		this.value=value;
+	private final int value;
+
+	private MyInt(int value) {
+
+		this.value = value;
 	}
+
 	@Override
-    public int getInt() {
-        return value;
-    }
-	
+	public int getInt() {
+		return value;
+	}
+
 	@Override
 	public int getType() {
 		return Value.INT;
+	}
+
+	@Override
+	public int getSignum() {
+		return Integer.signum(value);
 	}
 
 	@Override

@@ -1,4 +1,7 @@
 package ValueType;
+
+import org.h2.value.ValueBoolean;
+
 public abstract class Value {
 
 	public static final int NULL = 0;
@@ -29,6 +32,10 @@ public abstract class Value {
 	public abstract int getType();
 
 	public abstract java.lang.String getString();
+
+	public int getSignum() {
+		return 0;
+	}
 
 	/**
 	 * Get the value as an object.
@@ -76,8 +83,9 @@ public abstract class Value {
 	}
 
 	public byte[] getBytesNoCopy() {
-        return ((MyBytes) convertType(Value.BYTES)).getBytesNoCopy();
-    }
+		return ((MyBytes) convertType(Value.BYTES)).getBytesNoCopy();
+	}
+
 	public byte[] getBytes() {
 		return ((MyBytes) convertType(Value.BYTES)).getBytes();
 	}
@@ -85,33 +93,27 @@ public abstract class Value {
 	public byte getByte() {
 		return ((MyByte) convertType(Value.BYTE)).getByte();
 	}
-	
-	 public Boolean getBoolean() {
-	        return ((MyBoolean) convertType(Value.BOOLEAN)).getBoolean();
-	    }
 
-	public  Value  convertType(int  TargetType){
-		  if(getType() == TargetType){
-			  return  this;
-		  }
-		  switch(TargetType){
-		  case  BOOLEAN:{
-			  switch(getType()){
-			    case  INT:
-			    case  BYTE:
-			     return	
-			    
-			  }
-			  
-		  }
-		  
-		  
-		  }
-		  
-		  
-		
-		
-		
+	public Boolean getBoolean() {
+		return ((MyBoolean) convertType(Value.BOOLEAN)).getBoolean();
+	}
+
+	public Value convertType(int TargetType) {
+		if (getType() == TargetType) {
+			return this;
+		}
+		switch (TargetType) {
+		case BOOLEAN: {
+			switch (getType()) {
+			case INT:
+			case BYTE:
+				return MyBoolean.get(getSignum() != 0);
+			}
+
+		}
+
+		}
+
 	}
 
 }

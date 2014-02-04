@@ -271,7 +271,6 @@ public final class PageBuffer {
 		
 		case Value.STRING: {
 			String s = v.getString();
-			String s = v.getString();
 			int lenth = s.length();
 			return legth;
 
