@@ -1,8 +1,13 @@
 package ValueType;
-
 public class MyInt extends Value {
 
 	private final int value;
+
+	private static final int STATIC_SIZE = 128;
+	// must be a power of 2
+	private static final int DYNAMIC_SIZE = 256;
+	private static final MyInt[] STATIC_CACHE = new MyInt[STATIC_SIZE];
+	private static final MyInt[] DYNAMIC_CACHE = new MyInt[DYNAMIC_SIZE];
 
 	private MyInt(int value) {
 
@@ -22,6 +27,26 @@ public class MyInt extends Value {
 	@Override
 	public int getSignum() {
 		return Integer.signum(value);
+	}
+
+	/**
+	 * Get or create an int value for the given int.
+	 * 
+	 * @param i
+	 *            the int
+	 * @return the value
+	 */
+	public static MyInt get(int i) {
+		if (i >= 0 && i < STATIC_SIZE) {
+			return STATIC_CACHE[i];
+		}
+		// 求hashMask，使得新值能放到0到255的下标中
+		MyInt v = DYNAMIC_CACHE[i & (DYNAMIC_SIZE - 1)];
+		if (v == null || v.value != i) {
+			v = new MyInt(i);
+			DYNAMIC_CACHE[i & (DYNAMIC_SIZE - 1)] = v;
+		}
+		return v;
 	}
 
 	@Override

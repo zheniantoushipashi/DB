@@ -237,26 +237,26 @@ public final class PageBuffer {
 		data.put(buf, srcOffset, length);
 	}
 
-	 private static int getVarIntLen(int x) {
-	        if ((x & (-1 << 7)) == 0) {
-	            return 1;
-	        } else if ((x & (-1 << 14)) == 0) {
-	            return 2;
-	        } else if ((x & (-1 << 21)) == 0) {
-	            return 3;
-	        } else if ((x & (-1 << 28)) == 0) {
-	            return 4;
-	        }
-	        return 5;
-	    }
-	
+	private static int getVarIntLen(int x) {
+		if ((x & (-1 << 7)) == 0) {
+			return 1;
+		} else if ((x & (-1 << 14)) == 0) {
+			return 2;
+		} else if ((x & (-1 << 21)) == 0) {
+			return 3;
+		} else if ((x & (-1 << 28)) == 0) {
+			return 4;
+		}
+		return 5;
+	}
+
 	public int getValueLen(Value v) {
 		switch (v.getType()) {
 		case Value.BOOLEAN:
 			return 1;
 		case Value.BYTE:
 			return 2;
-     
+
 		case Value.INT: {
 			int x = v.getInt();
 			if (x < 0) {
@@ -267,19 +267,43 @@ public final class PageBuffer {
 				return 1 + getVarIntLen(x);
 			}
 		}
-		
-		
 		case Value.STRING: {
 			String s = v.getString();
-			int lenth = s.length();
-			return legth;
+			int len = s.length();
+			if (len < 32) {
+				return 1 + getStringWithoutLengthLen(s, len);
+			}
+			return 1 + getStringLen(s);
+		}
+		default:
+			return -1;
+		}
+	}
 
+	private static int getStringWithoutLengthLen(String s, int len) {
+		int plus = 0;
+		for (int i = 0; i < len; i++) {
+			char c = s.charAt(i);
+			if (c >= 0x800) {
+				plus += 2;
+			} else if (c >= 0x80) {
+				plus++;
+			}
 		}
-		
-	
-	      default:
-	    	 return -1;
-		}
+		return len + plus;
+	}
+
+	/**
+	 * Get the length of a String. This includes the bytes required to encode
+	 * the length.
+	 * 
+	 * @param s
+	 *            the string
+	 * @return the number of bytes required
+	 */
+	public static int getStringLen(String s) {
+		int len = s.length();
+		return getStringWithoutLengthLen(s, len) + getVarIntLen(len);
 	}
 
 }

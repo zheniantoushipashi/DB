@@ -1,5 +1,4 @@
 package ValueType;
-
 public class MyByte extends Value {
 
 	@Override
@@ -16,6 +15,10 @@ public class MyByte extends Value {
 	@Override
 	public byte getByte() {
 		return value;
+	}
+
+	public static MyByte get(byte i) {
+		return new MyByte(i);
 	}
 
 	@Override

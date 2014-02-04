@@ -1,7 +1,4 @@
 package ValueType;
-
-import org.h2.value.ValueBoolean;
-
 public abstract class Value {
 
 	public static final int NULL = 0;
@@ -109,11 +106,38 @@ public abstract class Value {
 			case BYTE:
 				return MyBoolean.get(getSignum() != 0);
 			}
+		}
+		case BYTE: {
+			switch (getType()) {
+			case BOOLEAN:
+				return MyByte.get(getBoolean().booleanValue() ? (byte) 1
+						: (byte) 0);
+			case INT:
+				return MyByte.get(convertToByte(getInt()));
+			}
 
 		}
+		case INT: {
+            switch (getType()) {
+            case BOOLEAN:
+                return MyInt.get(getBoolean().booleanValue() ? 1 : 0);
+            case BYTE:
+                return MyInt.get(getByte());
+            case BYTES:
+                return MyInt.get((int) Long.parseLong(getString(), 16));
+            }
+            break;
+        }  
+		}
+		return null;
+
+	}
+
+	private static byte convertToByte(long x) {
+		if (x > Byte.MAX_VALUE || x < Byte.MIN_VALUE) {
 
 		}
-
+		return (byte) x;
 	}
 
 }
