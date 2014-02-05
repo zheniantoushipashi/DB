@@ -6,13 +6,12 @@ import junit.framework.TestCase;
 public class PageFileTest extends TestCase {
     public  void   testAddCharacter() throws Exception{
        String  filename="storeFile";
-    /*	PageFile  file = new PageFile(filename);
+    	PageFile  file = new PageFile(filename);
     	PageBuffer  data = file.get(1);
     	//data.writeByte(14, (byte)'b');
     	data.writeString("asdfslfjldsjflsjflsdj");
     	file.release(1, true);
     	file.close();
-    */	
     	
     	PageFile  file1 = new PageFile(filename);
         PageBuffer	data1 = file1.get(1);

@@ -111,7 +111,6 @@ public final class PageBuffer {
 	boolean isDirty() {
 		return dirty;
 	}
-
 	/**
 	 * Reads a byte from the indicated position
 	 */
@@ -126,7 +125,6 @@ public final class PageBuffer {
 		setDirty();
 		data.put(pos, value);
 	}
-
 	/**
 	 * Reads a short from the indicated position
 	 */
@@ -163,7 +161,6 @@ public final class PageBuffer {
 		data.position(offset);
 		data.put(buf, srcOffset, length);
 	}
-
 	public void writeString(String str) {
 		setDirty();
 		data.put(str.getBytes(Charset.forName("UTF-8")), 0, str.getBytes().length);
