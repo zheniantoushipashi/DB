@@ -67,4 +67,10 @@ public class RecordManager {
 	}
 	
 
+	public  byte[]  getRecordById(int RecordId){
+		int  offset = this.pgB.readInt(RecordId);
+		int  length = this.pgB.readInt(RecordId + 4);
+		return  this.pgB.readByteArray(new byte[length], 0, offset, length);
+	}
+	
 }

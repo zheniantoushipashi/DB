@@ -161,6 +161,16 @@ public final class PageBuffer {
 		data.position(offset);
 		data.put(buf, srcOffset, length);
 	}
+	
+	public  byte[] readByteArray(byte[] buf, int bufOffset, int dataoffset, int length){
+		setDirty();
+		data.rewind();
+		data.position(dataoffset);
+		data.get(buf, bufOffset, length);
+		return buf;
+		
+	}
+	
 	public void writeString(String str) {
 		setDirty();
 		data.put(str.getBytes(Charset.forName("UTF-8")), 0, str.getBytes().length);
