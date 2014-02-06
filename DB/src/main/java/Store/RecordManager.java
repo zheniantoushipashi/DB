@@ -18,13 +18,13 @@ public class RecordManager {
 	 */
 	
 	public  final  int  bytesOfInt = 1 << 2;
-	public final int FreeSpaceBeginPointer = (PAGE_SIZE- bytesOfInt -1);
+	public final int FreeSpaceBeginPointer = (PAGE_SIZE- bytesOfInt);
 
 	/*
 	 * 空闲记录块的开始位置
 	 */
 
-	public final int freeIndexPointer = (PAGE_SIZE - 2 * bytesOfInt - 1);
+	public final int freeIndexPointer = (PAGE_SIZE - 2 * bytesOfInt);
 	/*
 	 * 
 	 * 一个描述偏移位置和Record大小的记录块的大小 字节
@@ -36,7 +36,7 @@ public class RecordManager {
 
     public RecordManager(PageBuffer pgB) {
 		this.pgB = pgB;
-		this.pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt - 1);
+		this.pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
 		this.pgB.writeInt(FreeSpaceBeginPointer, 0);
 		
 	}
@@ -49,10 +49,11 @@ public class RecordManager {
           this.pgB.writeInt(this.findFreeIndex() - offsetSizeIndex, this.findFreePosition());
           this.pgB.writeInt(this.findFreeIndex() - offsetSizeIndex/2, length);
           this.pgB.writeInt(FreeSpaceBeginPointer, this.findFreePosition() + length);
-          this.pgB.writeInt(offsetSizeIndex, this.findFreeIndex() - offsetSizeIndex);
+          this.pgB.writeInt(freeIndexPointer, this.findFreeIndex() - offsetSizeIndex);
           return  this.findFreeIndex();
 	} 
 	int findFreePosition() {
+		int i=this.pgB.readInt(this.FreeSpaceBeginPointer);
 		return this.pgB.readInt(this.FreeSpaceBeginPointer);
 	}
 
@@ -61,6 +62,7 @@ public class RecordManager {
 		return this.pgB.readInt(this.freeIndexPointer);
 	}
 	int  getAvailableSize(){
+		int i = PAGE_SIZE-this.findFreePosition();
 		return  PAGE_SIZE-this.findFreePosition();
 	}
 	
