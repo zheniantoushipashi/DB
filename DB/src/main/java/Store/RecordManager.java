@@ -1,5 +1,7 @@
 package Store;
 
+import java.io.IOException;
+
 public class RecordManager {
 	int PAGE_SIZE_SHIFT = 12;
 	/**
@@ -24,49 +26,47 @@ public class RecordManager {
 	 * 一个描述偏移位置和Record大小的记录块的大小 字节
 	 */
 	public final int offsetSizeIndex = 2 * bytesOfInt;
-	private final PageBuffer pgB;
-
-	public RecordManager(PageBuffer pgB) {
-		this.pgB = pgB;
-		this.pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
-		this.pgB.writeInt(FreeSpaceBeginPointer, 0);
-
+	
+	private  final PageManager  pageManager;
+	String filename = "storeFile3";
+	PageFile file = new PageFile(filename);
+	public RecordManager() throws IOException {
+	//	this.pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
+	//	this.pgB.writeInt(FreeSpaceBeginPointer, 0);
+		pageManager = new PageManager(file);	
 	}
-
-	public int insert(final byte[] data, final int length) {
-		if ((length + offsetSizeIndex) > this.getAvailableSize()) {
-			return -1;
-		}
-		this.pgB.writeByteArray(data, 0, this.findFreePosition(), length);
-		this.pgB.writeInt(this.findFreeIndex() - offsetSizeIndex,
-				this.findFreePosition());
-		this.pgB.writeInt(this.findFreeIndex() - offsetSizeIndex / 2, length);
-		this.pgB.writeInt(FreeSpaceBeginPointer, this.findFreePosition()
-				+ length);
-		this.pgB.writeInt(freeIndexPointer, this.findFreeIndex()
+	public int insert(final byte[] data) throws IOException {
+		PageBuffer  pgB = file.get(pageManager.findEnoughSpacePage(data.length));
+		pgB.writeByteArray(data, 0, this.findFreePosition(pgB), data.length);
+		pgB.writeInt(this.findFreeIndex(pgB) - offsetSizeIndex,
+				this.findFreePosition(pgB));
+		pgB.writeInt(this.findFreeIndex(pgB) - offsetSizeIndex / 2, data.length);
+		pgB.writeInt(FreeSpaceBeginPointer, this.findFreePosition(pgB)
+				+ data.length);
+		pgB.writeInt(freeIndexPointer, this.findFreeIndex(pgB)
 				- offsetSizeIndex);
-		return this.findFreeIndex();
+		return this.findFreeIndex(pgB);
 	}
 
-	int findFreePosition() {
-		int i = this.pgB.readInt(this.FreeSpaceBeginPointer);
-		return this.pgB.readInt(this.FreeSpaceBeginPointer);
+	int findFreePosition(PageBuffer pgB) {
+		int i = pgB.readInt(this.FreeSpaceBeginPointer);
+		return pgB.readInt(this.FreeSpaceBeginPointer);
 	}
 
-	int findFreeIndex() {
-		int i = this.pgB.readInt(this.freeIndexPointer);
-		return this.pgB.readInt(this.freeIndexPointer);
+	int findFreeIndex(PageBuffer pgB) {
+		int i = pgB.readInt(this.freeIndexPointer);
+		return pgB.readInt(this.freeIndexPointer);
 	}
 
-	int getAvailableSize() {
-		int i = PAGE_SIZE - this.findFreePosition();
-		return PAGE_SIZE - this.findFreePosition();
+	int getAvailableSize(PageBuffer pgB) {
+		int i = PAGE_SIZE - this.findFreePosition(pgB);
+		return PAGE_SIZE - this.findFreePosition(pgB);
 	}
 
-	public byte[] getRecordById(int RecordId) {
-		int offset = this.pgB.readInt(RecordId);
-		int length = this.pgB.readInt(RecordId + 4);
-		return this.pgB.readByteArray(new byte[length], 0, offset, length);
+	public byte[] getRecordById(int RecordId, PageBuffer pgB) {
+		int offset = pgB.readInt(RecordId);
+		int length = pgB.readInt(RecordId + 4);
+		return pgB.readByteArray(new byte[length], 0, offset, length);
 	}
 
 }

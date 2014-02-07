@@ -12,7 +12,7 @@ public class PageManager {
 	 * 
 	 * 未分配的页面号的记录位置
 	 */
-	static final int EMPTY_PAGE_BEGINPOINTER = 0;
+	static final int EMPTY_PAGE_BEGINPOINTER = 2;
 	final PageFile file;
 	private PageBuffer PageManagerPage;
 

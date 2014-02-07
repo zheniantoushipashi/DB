@@ -10,11 +10,7 @@ public class RowNumMap {
 	 * 指向将要写入Map对的位置
 	 */
 	static final int EMPTY_SPACE_POINTER = 0;
-	static  final  int  lastRowNum = 4;
-	/*
-	 * 
-	 * 一个映射对的大小8个字节
-	 */
+    static final  int MAPSTARTPOINT = 4;
 	static  final  int MAP_SIZE = 8;
 	RowNumMap(PageFile file) throws IOException {
 		this.file = file;
@@ -27,20 +23,16 @@ public class RowNumMap {
 	void setEmptySpacePointer(int Position) throws Exception{
 		RowNumMapPage.writeInt(EMPTY_SPACE_POINTER, Position);
 	}
-	int  getLastRowNum(){
-		return RowNumMapPage.readInt(lastRowNum);
-	}
-	void setLastRowNum(int lastRowNum){
-		RowNumMapPage.writeInt(lastRowNum, lastRowNum);
+	
+	int  getLastRowNum() throws Exception{
+		return (getEmptySpacePointer() - 4)/MAP_SIZE;
 	}
 	public void  RegisterMapWhenInsert(int recordId) throws Exception{
 	    RowNumMapPage.writeInt(getEmptySpacePointer(), getLastRowNum() + 1);
 	    RowNumMapPage.writeInt(getEmptySpacePointer() + 4, recordId);
-	    setLastRowNum(getLastRowNum() + 1);
 	}
-    public  int	FindMap(int RowNum){
-    	int i = 0;
-    	while(i < )
+    public int	FindRecordIdByRowNum(int RowNum){
+        return  RowNumMapPage.readInt(MAPSTARTPOINT+((RowNum - 1) * 8) + 4);
     }
 	
 }
