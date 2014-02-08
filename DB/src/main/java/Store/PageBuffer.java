@@ -323,7 +323,7 @@ public final class PageBuffer {
 		}
 		return len + plus;
 	}
-
+      
 	/**
 	 * Get the length of a String. This includes the bytes required to encode
 	 * the length.

@@ -27,12 +27,15 @@ public class RowNumMap {
 	int  getLastRowNum() throws Exception{
 		return (getEmptySpacePointer() - 4)/MAP_SIZE;
 	}
-	public void  RegisterMapWhenInsert(int recordId) throws Exception{
+	public void  RegisterMapWhenInsert(int pageId, int recordId) throws Exception{
+		 setEmptySpacePointer(getEmptySpacePointer() + 4);
 	    RowNumMapPage.writeInt(getEmptySpacePointer(), getLastRowNum() + 1);
-	    RowNumMapPage.writeInt(getEmptySpacePointer() + 4, recordId);
+	    RowNumMapPage.writeShort(getEmptySpacePointer() + 4, (short)pageId);
+	    RowNumMapPage.writeShort(getEmptySpacePointer() + 6, (short)recordId);
 	}
     public int	FindRecordIdByRowNum(int RowNum){
         return  RowNumMapPage.readInt(MAPSTARTPOINT+((RowNum - 1) * 8) + 4);
     }
+	
 	
 }

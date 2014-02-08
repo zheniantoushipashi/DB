@@ -28,15 +28,18 @@ public class RecordManager {
 	public final int offsetSizeIndex = 2 * bytesOfInt;
 	
 	private  final PageManager  pageManager;
+	private  RowNumMap  rowNumMap;
 	String filename = "storeFile3";
 	PageFile file = new PageFile(filename);
 	public RecordManager() throws IOException {
 	//	this.pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
 	//	this.pgB.writeInt(FreeSpaceBeginPointer, 0);
-		pageManager = new PageManager(file);	
+		pageManager = new PageManager(file);
+		rowNumMap = new RowNumMap(file);
 	}
-	public int insert(final byte[] data) throws IOException {
-		PageBuffer  pgB = file.get(pageManager.findEnoughSpacePage(data.length));
+	public int insert(final byte[] data) throws Exception {
+		int  EnoughSpacePageId = pageManager.findEnoughSpacePage(data.length);
+		PageBuffer  pgB = file.get(EnoughSpacePageId);
 		pgB.writeByteArray(data, 0, this.findFreePosition(pgB), data.length);
 		pgB.writeInt(this.findFreeIndex(pgB) - offsetSizeIndex,
 				this.findFreePosition(pgB));
@@ -45,7 +48,11 @@ public class RecordManager {
 				+ data.length);
 		pgB.writeInt(freeIndexPointer, this.findFreeIndex(pgB)
 				- offsetSizeIndex);
+		rowNumMap.RegisterMapWhenInsert(EnoughSpacePageId,findFreeIndex(pgB));
+		pageManager.setPageSize(EnoughSpacePageId,getAvailableSize(pgB));
+		
 		return this.findFreeIndex(pgB);
+		
 	}
 
 	int findFreePosition(PageBuffer pgB) {
@@ -59,8 +66,8 @@ public class RecordManager {
 	}
 
 	int getAvailableSize(PageBuffer pgB) {
-		int i = PAGE_SIZE - this.findFreePosition(pgB);
-		return PAGE_SIZE - this.findFreePosition(pgB);
+		int i = findFreeIndex(pgB) - this.findFreePosition(pgB);
+		return findFreeIndex(pgB) - this.findFreePosition(pgB);
 	}
 
 	public byte[] getRecordById(int RecordId, PageBuffer pgB) {

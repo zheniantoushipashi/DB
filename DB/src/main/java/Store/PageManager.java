@@ -12,7 +12,7 @@ public class PageManager {
 	 * 
 	 * 未分配的页面号的记录位置
 	 */
-	static final int EMPTY_PAGE_BEGINPOINTER = 2;
+	static final int EMPTY_PAGE_BEGINPOINTER = 0;
 	final PageFile file;
 	private PageBuffer PageManagerPage;
 
@@ -28,7 +28,7 @@ public class PageManager {
 				&& InsertRecordSize > PageManagerPage.readInt(i * 4)) {
 			i += 4;
 		}
-		return i < getEmptyPageBeginPointer() ? i : allocateNewPage();
+		return i < getEmptyPageBeginPointer() ? (i / 4) : allocateNewPage();
 	}
 
 	int getEmptyPageBeginPointer() {
@@ -39,11 +39,14 @@ public class PageManager {
 		this.PageManagerPage.writeInt(EMPTY_PAGE_BEGINPOINTER, Position);
 	}
 
+	void setPageSize(int Position, int PageSize){
+		this.PageManagerPage.writeInt(Position, PageSize);
+	}
 	int allocateNewPage() {
 		setEmptyPageBeginPointer(getEmptyPageBeginPointer() + 4);
 		PageManagerPage.writeInt(getEmptyPageBeginPointer(),
 				INITIALIZE_AVAILABLE_SIZE);
-		return getEmptyPageBeginPointer();
+		return ( getEmptyPageBeginPointer() / 4 );
 	}
 
 }
