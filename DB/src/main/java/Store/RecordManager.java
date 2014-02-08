@@ -26,20 +26,20 @@ public class RecordManager {
 	 * 一个描述偏移位置和Record大小的记录块的大小 字节
 	 */
 	public final int offsetSizeIndex = 2 * bytesOfInt;
-	
-	private  final PageManager  pageManager;
-	private  RowNumMap  rowNumMap;
+
+	private final PageManager pageManager;
+	private RowNumMap rowNumMap;
 	String filename = "storeFile3";
 	PageFile file = new PageFile(filename);
+
 	public RecordManager() throws IOException {
-	//	this.pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
-	//	this.pgB.writeInt(FreeSpaceBeginPointer, 0);
 		pageManager = new PageManager(file);
 		rowNumMap = new RowNumMap(file);
 	}
-	public int insert(final byte[] data) throws Exception {
-		int  EnoughSpacePageId = pageManager.findEnoughSpacePage(data.length);
-		PageBuffer  pgB = file.get(EnoughSpacePageId);
+
+	public void insert(final byte[] data) throws Exception {
+		int EnoughSpacePageId = pageManager.findEnoughSpacePage(data.length);
+		PageBuffer  pgB = (file.inUse.get(EnoughSpacePageId) == null) ? file.get(EnoughSpacePageId): file.inUse.get(EnoughSpacePageId);
 		pgB.writeByteArray(data, 0, this.findFreePosition(pgB), data.length);
 		pgB.writeInt(this.findFreeIndex(pgB) - offsetSizeIndex,
 				this.findFreePosition(pgB));
@@ -48,11 +48,10 @@ public class RecordManager {
 				+ data.length);
 		pgB.writeInt(freeIndexPointer, this.findFreeIndex(pgB)
 				- offsetSizeIndex);
-		rowNumMap.RegisterMapWhenInsert(EnoughSpacePageId,findFreeIndex(pgB));
-		pageManager.setPageSize(EnoughSpacePageId,getAvailableSize(pgB));
-		
-		return this.findFreeIndex(pgB);
-		
+		rowNumMap.RegisterMapWhenInsert(EnoughSpacePageId, findFreeIndex(pgB));
+		pageManager.setPageSize(EnoughSpacePageId * 4, getAvailableSize(pgB));
+		file.release(1, true);
+		file.close();
 	}
 
 	int findFreePosition(PageBuffer pgB) {
@@ -70,7 +69,8 @@ public class RecordManager {
 		return findFreeIndex(pgB) - this.findFreePosition(pgB);
 	}
 
-	public byte[] getRecordById(int RecordId, PageBuffer pgB) {
+	public byte[] getRecordById(int pageId, int RecordId) throws IOException {
+		PageBuffer pgB = file.get(pageId);
 		int offset = pgB.readInt(RecordId);
 		int length = pgB.readInt(RecordId + 4);
 		return pgB.readByteArray(new byte[length], 0, offset, length);

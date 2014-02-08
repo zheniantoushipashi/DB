@@ -14,7 +14,7 @@ public final class PageFile {
 	 * 
 	 * @see PageIo#isDirty()
 	 */
-	private final LongHashMap<PageBuffer> inUse = new LongHashMap<PageBuffer>();
+	public final LongHashMap<PageBuffer> inUse = new LongHashMap<PageBuffer>();
 
 	/**
 	 * Pages whose state is dirty.
