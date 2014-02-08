@@ -29,10 +29,18 @@ public class RecordManager {
 
 	private final PageManager pageManager;
 	private RowNumMap rowNumMap;
+	public RowNumMap getRowNumMap() {
+		return rowNumMap;
+	}
+
+	public void setRowNumMap(RowNumMap rowNumMap) {
+		this.rowNumMap = rowNumMap;
+	}
+
 	String filename = "storeFile3";
 	PageFile file = new PageFile(filename);
 
-	public RecordManager() throws IOException {
+	public RecordManager() throws Exception {
 		pageManager = new PageManager(file);
 		rowNumMap = new RowNumMap(file);
 	}

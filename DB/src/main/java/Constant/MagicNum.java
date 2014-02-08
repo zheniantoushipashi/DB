@@ -1,5 +1,4 @@
 package Constant;
-
 /*
  * 参照一篇博客自己实现博客中的原理  http://blog.csdn.net/cjfeii/article/details/8884658
  * 

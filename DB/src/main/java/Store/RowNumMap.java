@@ -12,10 +12,11 @@ public class RowNumMap {
 	static final int EMPTY_SPACE_POINTER = 0;
     static final  int MAPSTARTPOINT = 4;
 	static  final  int MAP_SIZE = 8;
-	RowNumMap(PageFile file) throws IOException {
+	RowNumMap(PageFile file) throws Exception {
 		this.file = file;
 		RowNumMapPage = file.get(1);
 		RowNumMapPage.ensureHeapBuffer();
+		setEmptySpacePointer(MAPSTARTPOINT);
 	}
 	int  getEmptySpacePointer() throws Exception{
 		return RowNumMapPage.readInt(EMPTY_SPACE_POINTER);
@@ -24,14 +25,14 @@ public class RowNumMap {
 		RowNumMapPage.writeInt(EMPTY_SPACE_POINTER, Position);
 	}
 	
-	int  getLastRowNum() throws Exception{
+	public  int  getLastRowNum() throws Exception{
 		return (getEmptySpacePointer() - 4)/MAP_SIZE;
 	}
 	public void  RegisterMapWhenInsert(int pageId, int recordId) throws Exception{
-		setEmptySpacePointer(getEmptySpacePointer() + MAP_SIZE);
 	    RowNumMapPage.writeInt(getEmptySpacePointer(), getLastRowNum() + 1);
 	    RowNumMapPage.writeShort(getEmptySpacePointer() + 4, (short)pageId);
 	    RowNumMapPage.writeShort(getEmptySpacePointer() + 6, (short)recordId);
+	    setEmptySpacePointer(getEmptySpacePointer() + MAP_SIZE);
 	}
     public int	FindRecordIdByRowNum(int RowNum){
         return  RowNumMapPage.readInt(MAPSTARTPOINT+((RowNum - 1) * 8) + 4);
