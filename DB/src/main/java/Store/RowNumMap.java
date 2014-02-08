@@ -28,7 +28,7 @@ public class RowNumMap {
 		return (getEmptySpacePointer() - 4)/MAP_SIZE;
 	}
 	public void  RegisterMapWhenInsert(int pageId, int recordId) throws Exception{
-		 setEmptySpacePointer(getEmptySpacePointer() + 4);
+		setEmptySpacePointer(getEmptySpacePointer() + MAP_SIZE);
 	    RowNumMapPage.writeInt(getEmptySpacePointer(), getLastRowNum() + 1);
 	    RowNumMapPage.writeShort(getEmptySpacePointer() + 4, (short)pageId);
 	    RowNumMapPage.writeShort(getEmptySpacePointer() + 6, (short)recordId);

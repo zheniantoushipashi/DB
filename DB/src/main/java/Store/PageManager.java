@@ -33,7 +33,7 @@ public class PageManager {
 	 */
 	static final int EMPTY_PAGE_BEGINPOINTER = 0;
 	static final  int  EMPTY_PAGE_BEGINPOSItION = 8;
-	static  final  int FIRST_SEARCH_POSITION = 8;
+	static  final  int FIRST_SEARCH_PAGE_NUM = 8;
 	final PageFile file;
 	private PageBuffer PageManagerPage;
 
@@ -45,9 +45,9 @@ public class PageManager {
 	}
 
 	public int findEnoughSpacePage(int InsertRecordSize) throws IOException {
-		int i = FIRST_SEARCH_POSITION;
+		int i = FIRST_SEARCH_PAGE_NUM;
 		while ((i < (getEmptyPageBeginPointer()))
-				&& InsertRecordSize > PageManagerPage.readInt(i * 4)) {
+				&& InsertRecordSize > PageManagerPage.readInt(i)) {
 			i += 4;
 		}
 		return i < getEmptyPageBeginPointer() ? (i / 4) : allocateNewPage();

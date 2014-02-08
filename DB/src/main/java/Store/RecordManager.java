@@ -50,8 +50,10 @@ public class RecordManager {
 				- offsetSizeIndex);
 		rowNumMap.RegisterMapWhenInsert(EnoughSpacePageId, findFreeIndex(pgB));
 		pageManager.setPageSize(EnoughSpacePageId * 4, getAvailableSize(pgB));
-		file.release(1, true);
-		file.close();
+	//	file.release(1, true);
+	//	file.release(0,true);
+	//	file.release(2,true);
+	//	file.close();
 	}
 
 	int findFreePosition(PageBuffer pgB) {
