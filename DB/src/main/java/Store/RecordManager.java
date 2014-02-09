@@ -48,7 +48,11 @@ public class RecordManager {
 		pageManager = new PageManager(file);
 		rowNumMap = new RowNumMap(file);
 	}
-
+/*
+ * 
+ * 
+ * 插入一条记录
+ */
 	public int  insert(final byte[] data) throws Exception {
 		int EnoughSpacePageId = pageManager.findEnoughSpacePage(data.length);
 		PageBuffer  pgB = (file.inUse.get(EnoughSpacePageId) == null) ? file.get(EnoughSpacePageId): file.inUse.get(EnoughSpacePageId);
@@ -68,7 +72,33 @@ public class RecordManager {
 	//	file.release(2,true);
 	//	file.close();
 	}
-
+/*
+ * 
+ * 删除一条记录  
+ * 
+ */
+	public void  delete(int RowNum){
+		int currentPageNum = rowNumMap.FindPageIdByRowNum(RowNum);
+		int currentRecordNum = rowNumMap.FindRecordIdByRowNum(RowNum);
+		
+	} 
+	
+/*
+ * 
+ * 查询一条记录	
+ */
+	public  byte[] fetch(int  RowNum) throws IOException{
+		int currentPageNum = rowNumMap.FindPageIdByRowNum(RowNum);
+		int currentRecordNum = rowNumMap.FindRecordIdByRowNum(RowNum);
+	    return getRecordById(currentPageNum,currentRecordNum);
+	}
+	
+	
+/*
+ * 
+ * 修改一条记录	
+ */
+	
 	int findFreePosition(PageBuffer pgB) {
 		int i = pgB.readInt(this.FreeSpaceBeginPointer);
 		return pgB.readInt(this.FreeSpaceBeginPointer);
@@ -85,7 +115,7 @@ public class RecordManager {
 	}
 
 	public byte[] getRecordById(int pageId, int RecordId) throws IOException {
-		PageBuffer pgB = file.get(pageId);
+		PageBuffer  pgB = (file.inUse.get(pageId) == null) ? file.get(pageId): file.inUse.get(pageId);
 		int offset = pgB.readInt(RecordId);
 		int length = pgB.readInt(RecordId + 4);
 		return pgB.readByteArray(new byte[length], 0, offset, length);
