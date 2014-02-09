@@ -47,7 +47,8 @@ public class PageManager {
 	public int findEnoughSpacePage(int InsertRecordSize) throws IOException {
 		int i = FIRST_SEARCH_PAGE_NUM;
 		while ((i < (getEmptyPageBeginPointer()))
-				&& InsertRecordSize > PageManagerPage.readInt(i)) {
+				&& (InsertRecordSize + 8) > PageManagerPage.readInt(i)) {
+			int j = PageManagerPage.readInt(i);
 			i += 4;
 		}
 		return i < getEmptyPageBeginPointer() ? (i / 4) : allocateNewPage();
@@ -72,6 +73,9 @@ public class PageManager {
 		pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
 		pgB.writeInt(FreeSpaceBeginPointer, 0);
 		return ( (getEmptyPageBeginPointer() / 4) - 1 );
+	}
+	public  int  getAvailableSizeByPageNum (int PageNum){
+		return  PageManagerPage.readInt(PageNum * 4);
 	}
 
 }

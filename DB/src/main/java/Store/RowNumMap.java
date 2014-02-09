@@ -11,6 +11,8 @@ public class RowNumMap {
 	 */
 	static final int EMPTY_SPACE_POINTER = 0;
     static final  int MAPSTARTPOINT = 4;
+    private  final  int PageOffset = 4;
+    private  final  int RecordOffset = 6;
 	static  final  int MAP_SIZE = 8;
 	RowNumMap(PageFile file) throws Exception {
 		this.file = file;
@@ -28,14 +30,19 @@ public class RowNumMap {
 	public  int  getLastRowNum() throws Exception{
 		return (getEmptySpacePointer() - 4)/MAP_SIZE;
 	}
-	public void  RegisterMapWhenInsert(int pageId, int recordId) throws Exception{
+	public int  RegisterMapWhenInsert(int pageId, int recordId) throws Exception{
 	    RowNumMapPage.writeInt(getEmptySpacePointer(), getLastRowNum() + 1);
-	    RowNumMapPage.writeShort(getEmptySpacePointer() + 4, (short)pageId);
-	    RowNumMapPage.writeShort(getEmptySpacePointer() + 6, (short)recordId);
+	    RowNumMapPage.writeShort(getEmptySpacePointer() + PageOffset, (short)pageId);
+	    RowNumMapPage.writeShort(getEmptySpacePointer() + RecordOffset, (short)recordId);
 	    setEmptySpacePointer(getEmptySpacePointer() + MAP_SIZE);
+	    return RowNumMapPage.readInt(getEmptySpacePointer() - MAP_SIZE);
 	}
+    public int	FindPageIdByRowNum(int RowNum){
+        return  RowNumMapPage.readShort((RowNum - 1) * MAP_SIZE + MAPSTARTPOINT + PageOffset);
+    }
+    
     public int	FindRecordIdByRowNum(int RowNum){
-        return  RowNumMapPage.readInt(MAPSTARTPOINT+((RowNum - 1) * 8) + 4);
+    	return  RowNumMapPage.readShort((RowNum - 1) * MAP_SIZE + MAPSTARTPOINT + RecordOffset);
     }
 	
 	

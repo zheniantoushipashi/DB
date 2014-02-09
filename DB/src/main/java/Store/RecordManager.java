@@ -28,6 +28,10 @@ public class RecordManager {
 	public final int offsetSizeIndex = 2 * bytesOfInt;
 
 	private final PageManager pageManager;
+	public PageManager getPageManager() {
+		return pageManager;
+	}
+
 	private RowNumMap rowNumMap;
 	public RowNumMap getRowNumMap() {
 		return rowNumMap;
@@ -45,7 +49,7 @@ public class RecordManager {
 		rowNumMap = new RowNumMap(file);
 	}
 
-	public void insert(final byte[] data) throws Exception {
+	public int  insert(final byte[] data) throws Exception {
 		int EnoughSpacePageId = pageManager.findEnoughSpacePage(data.length);
 		PageBuffer  pgB = (file.inUse.get(EnoughSpacePageId) == null) ? file.get(EnoughSpacePageId): file.inUse.get(EnoughSpacePageId);
 		pgB.writeByteArray(data, 0, this.findFreePosition(pgB), data.length);
@@ -56,8 +60,9 @@ public class RecordManager {
 				+ data.length);
 		pgB.writeInt(freeIndexPointer, this.findFreeIndex(pgB)
 				- offsetSizeIndex);
-		rowNumMap.RegisterMapWhenInsert(EnoughSpacePageId, findFreeIndex(pgB));
+	    int InsertRowNum = rowNumMap.RegisterMapWhenInsert(EnoughSpacePageId, findFreeIndex(pgB));
 		pageManager.setPageSize(EnoughSpacePageId * 4, getAvailableSize(pgB));
+		return InsertRowNum;
 	//	file.release(1, true);
 	//	file.release(0,true);
 	//	file.release(2,true);
