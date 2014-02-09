@@ -6,7 +6,8 @@ import junit.framework.TestCase;
 public class RowNumMapTest extends TestCase {
 
   public void    testRowNum() throws Exception{
-	    RecordManager recordManager = new RecordManager();
+	    String filename = "storeFile3";
+	    RecordManager recordManager = new RecordManager(filename);
 	    int RowNum1 = recordManager.insert("sunbiaobiao".getBytes());
 	    int CurrentPageNum =  recordManager.getRowNumMap().FindPageIdByRowNum(RowNum1);
 		int CurrentRecordNum =  recordManager.getRowNumMap().FindRecordIdByRowNum(RowNum1); 

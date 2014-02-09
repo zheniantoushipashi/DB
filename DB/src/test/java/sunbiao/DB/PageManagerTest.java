@@ -15,8 +15,8 @@ import Store.RecordManager;
 import junit.framework.TestCase;
 
 public class PageManagerTest extends TestCase {
-	public  void testPageManager() throws Exception{
-		    RecordManager recordManager = new RecordManager();
+	        public  void testPageManager() throws Exception{String filename = "storeFile3";
+	        RecordManager recordManager = new RecordManager(filename);
 		    int RowNum1 = recordManager.insert("sunbiaobiao".getBytes());
 		    int CurrentPageNum =  recordManager.getRowNumMap().FindPageIdByRowNum(RowNum1);
 			int CurrentRecordNum =  recordManager.getRowNumMap().FindRecordIdByRowNum(RowNum1); 

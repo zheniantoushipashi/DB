@@ -86,7 +86,7 @@ public final class PageBuffer {
 	/**
 	 * Returns the page number.
 	 */
-	long getPageId() {
+	public long getPageId() {
 		return pageId;
 	}
 

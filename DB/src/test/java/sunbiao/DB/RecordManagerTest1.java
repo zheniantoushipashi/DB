@@ -3,8 +3,10 @@ import Store.RecordManager;
 import junit.framework.TestCase;
 
 public class RecordManagerTest1 extends TestCase {
+	
 	public void testGetRecordById() throws Exception {
-		RecordManager recordManager = new RecordManager();
+		String filename = "storeFile3";
+		RecordManager recordManager = new RecordManager(filename);
 		recordManager.insert("sunbiaobiao".getBytes());
 		recordManager.insert("panmiaomiaomiao".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
@@ -27,12 +29,18 @@ public class RecordManagerTest1 extends TestCase {
 		assertEquals(new String(recordManager.fetch(RowNum17)),"you are a little dog " );
 		assertEquals(new String(recordManager.fetch(RowNum16)),"aaaaa" );
 		assertEquals(new String(recordManager.fetch(RowNum15)),"panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf");
+		recordManager.releaseClose();
+		
+		
+		
+		
 		
 	}
 	
+
 	public  void testDisplayAllRow() throws Exception{
-		
-		RecordManager recordManager = new RecordManager();
+		String filename = "storeFile4";
+	    RecordManager recordManager = new RecordManager(filename);
 		recordManager.insert("sunbiaobiao".getBytes());
 		recordManager.insert("panmiaomiaomiao".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());

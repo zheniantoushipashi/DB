@@ -1,6 +1,7 @@
 package Store;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 public class RecordManager {
 	int PAGE_SIZE_SHIFT = 12;
@@ -40,11 +41,15 @@ public class RecordManager {
 	public void setRowNumMap(RowNumMap rowNumMap) {
 		this.rowNumMap = rowNumMap;
 	}
-
-	String filename = "storeFile3";
-	PageFile file = new PageFile(filename);
+	PageFile file ;
 
 	public RecordManager() throws Exception {
+		pageManager = new PageManager(file);
+		rowNumMap = new RowNumMap(file);
+	}
+	
+	public RecordManager(String  filename) throws Exception {
+		this.file = new PageFile(filename);
 		pageManager = new PageManager(file);
 		rowNumMap = new RowNumMap(file);
 	}
@@ -68,20 +73,36 @@ public class RecordManager {
 	    int InsertRowNum = rowNumMap.RegisterMapWhenInsert(EnoughSpacePageId, findFreeIndex(pgB));
 		pageManager.setPageSize(EnoughSpacePageId * 4, getAvailableSize(pgB));
 		return InsertRowNum;
-	//	file.release(1, true);
-	//	file.release(0,true);
-	//	file.release(2,true);
-	//	file.close();
+		
 	}
+	public void releaseClose() throws IOException{
+		Iterator<PageBuffer>  iter =file.inUse.valuesIterator();
+		while(iter.hasNext()){
+			file.release(iter.next().getPageId(),true);
+		}
+		file.close();
+	}
+	
 /*
  * 
  * 删除一条记录 删除记录时压缩页面
  * 
  */
-	public void  delete(int RowNum){
+	public void  delete(int RowNum) throws Exception{
 		int currentPageNum = rowNumMap.FindPageIdByRowNum(RowNum);
 		int currentRecordNum = rowNumMap.FindRecordIdByRowNum(RowNum);
+		rowNumMap.shiftMap(RowNum);
+		//todu  等以后实现压缩算法时  统一压缩
 	} 
+	
+/*
+ * 
+ * 删除的时候压缩页面	
+ */
+	void   compressPageWhenDelete(){
+		
+		
+	}
 	
 /*
  * 

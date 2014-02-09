@@ -44,6 +44,10 @@ public class RowNumMap {
     public int	FindRecordIdByRowNum(int RowNum){
     	return  RowNumMapPage.readShort((RowNum - 1) * MAP_SIZE + MAPSTARTPOINT + RecordOffset);
     }
-	
+	public  void shiftMap(int  toDeleteRow) throws Exception{
+		for(int i = toDeleteRow ;i < getEmptySpacePointer() - MAP_SIZE;i += 8){
+			RowNumMapPage.writeInt(((i - 1) * MAP_SIZE + MAPSTARTPOINT + PageOffset), RowNumMapPage.readInt((i + 1 -1) * MAP_SIZE + MAPSTARTPOINT + PageOffset));	
+		}
+	}
 	
 }
