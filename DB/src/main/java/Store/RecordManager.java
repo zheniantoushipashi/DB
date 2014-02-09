@@ -48,6 +48,7 @@ public class RecordManager {
 		pageManager = new PageManager(file);
 		rowNumMap = new RowNumMap(file);
 	}
+	
 /*
  * 
  * 
@@ -74,13 +75,12 @@ public class RecordManager {
 	}
 /*
  * 
- * 删除一条记录  
+ * 删除一条记录 删除记录时压缩页面
  * 
  */
 	public void  delete(int RowNum){
 		int currentPageNum = rowNumMap.FindPageIdByRowNum(RowNum);
 		int currentRecordNum = rowNumMap.FindRecordIdByRowNum(RowNum);
-		
 	} 
 	
 /*
@@ -119,6 +119,12 @@ public class RecordManager {
 		int offset = pgB.readInt(RecordId);
 		int length = pgB.readInt(RecordId + 4);
 		return pgB.readByteArray(new byte[length], 0, offset, length);
+	}
+	
+	public  void  displayAllRow() throws Exception{
+		for(int i = 1; i <= rowNumMap.getLastRowNum();i++){
+			System.out.println( "第"+i+"行为"+ new String(fetch(i)));
+		}
 	}
 
 }
