@@ -45,9 +45,11 @@ public class RowNumMap {
     	return  RowNumMapPage.readShort((RowNum - 1) * MAP_SIZE + MAPSTARTPOINT + RecordOffset);
     }
 	public  void shiftMap(int  toDeleteRow) throws Exception{
-		for(int i = toDeleteRow ;i < getEmptySpacePointer() - MAP_SIZE;i += 8){
-			RowNumMapPage.writeInt(((i - 1) * MAP_SIZE + MAPSTARTPOINT + PageOffset), RowNumMapPage.readInt((i + 1 -1) * MAP_SIZE + MAPSTARTPOINT + PageOffset));	
+		int j = getEmptySpacePointer() - MAP_SIZE;
+		for(int i = toDeleteRow *  MAP_SIZE ;i < getEmptySpacePointer() - MAP_SIZE;i += 8){
+			RowNumMapPage.writeInt((i - MAP_SIZE + MAPSTARTPOINT + PageOffset), RowNumMapPage.readInt(i + MAPSTARTPOINT + PageOffset));	
 		}
+		setEmptySpacePointer(getEmptySpacePointer() - MAP_SIZE);
 	}
 	
 }
