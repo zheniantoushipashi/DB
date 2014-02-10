@@ -37,6 +37,14 @@ public class RowNumMap {
 	    setEmptySpacePointer(getEmptySpacePointer() + MAP_SIZE);
 	    return RowNumMapPage.readInt(getEmptySpacePointer() - MAP_SIZE);
 	}
+	public void  modifyMapPageNum(int RowNum,int PageNum ){
+		RowNumMapPage.writeShort((RowNum - 1) * MAP_SIZE + MAPSTARTPOINT + PageOffset, (short)PageNum);
+	}
+	
+    public  void  modifyMapRecordNum(int RowNum, int RecordNum){
+    	RowNumMapPage.writeShort((RowNum - 1) * MAP_SIZE + MAPSTARTPOINT + RecordOffset, (short)RecordNum);
+	}
+	
     public int	FindPageIdByRowNum(int RowNum){
         return  RowNumMapPage.readShort((RowNum - 1) * MAP_SIZE + MAPSTARTPOINT + PageOffset);
     }
@@ -46,7 +54,7 @@ public class RowNumMap {
     }
 	public  void shiftMap(int  toDeleteRow) throws Exception{
 		int j = getEmptySpacePointer() - MAP_SIZE;
-		for(int i = toDeleteRow *  MAP_SIZE ;i < getEmptySpacePointer() - MAP_SIZE;i += 8){
+		for(int i = toDeleteRow *  MAP_SIZE ;i < getEmptySpacePointer() - MAP_SIZE;i += MAP_SIZE){
 			RowNumMapPage.writeInt((i - MAP_SIZE + MAPSTARTPOINT + PageOffset), RowNumMapPage.readInt(i + MAPSTARTPOINT + PageOffset));	
 		}
 		setEmptySpacePointer(getEmptySpacePointer() - MAP_SIZE);
