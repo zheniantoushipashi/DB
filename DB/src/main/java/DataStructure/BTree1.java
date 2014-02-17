@@ -832,24 +832,5 @@ public class BTree1<K, V>
         }  
     }  
       
-    public static void main(String[] args)  
-    {  
-        Random random = new Random();  
-        BTree<Integer, Integer> btree = new BTree<Integer, Integer>(3);  
-        List<Integer> save = new ArrayList<Integer>();  
-        for(int i = 0; i < 10; ++ i)  
-        {  
-            int r = random.nextInt(100);  
-            save.add(r);  
-            System.out.println(r);  
-            btree.insert(r, r);  
-        }  
-          
-        System.out.println("----------------------");  
-        btree.output();  
-        System.out.println("----------------------");  
-         System.out.println("要删除的数据为"+save.get(0));
-        btree.delete(save.get(0));  
-        btree.output();  
-    }  
+  
 } 
