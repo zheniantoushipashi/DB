@@ -96,6 +96,8 @@ public class RecordManagerTest1 extends TestCase {
 		assertEquals(new String(recordManager.fetch(RowNum16)),"bbbb" );
 		recordManager.update(RowNum19, "我把第十九行修改为现在的这一句话".getBytes());
 		assertEquals(new String(recordManager.fetch(RowNum19)),"我把第十九行修改为现在的这一句话" );
+		recordManager.update(1, "sunbiaobiao我把第1行修改为现在的这一句话".getBytes());
+		assertEquals(new String(recordManager.fetch(1)),"sunbiaobiao我把第1行修改为现在的这一句话" );
 		recordManager.displayAllRow();	
 	}
 
