@@ -38,7 +38,7 @@ import Serializer.SerializationHeader;
  * @author Jan Kotek
  */
 @SuppressWarnings("unchecked")
-public class Serialization extends SerialClassInfo implements Serializer {
+public class Serialization extends SerialClassInfo1 implements Serializer {
 
 
     final static int NULL = 0;
@@ -390,7 +390,9 @@ public class Serialization extends SerialClassInfo implements Serializer {
             out.write(UUID);
             serializeUUID(out,(UUID) obj);
             return;
-        } else if (clazz == BTree.class) {
+        }
+        /*
+        else if (clazz == BTree.class) {
             out.write(BTREE);
             ((BTree) obj).writeExternal(out);
             return;
@@ -403,7 +405,7 @@ public class Serialization extends SerialClassInfo implements Serializer {
             ((LinkedList2) obj).serialize(out);
             return;
         }
-
+         */
 
         /** classes bellow need object stack, so initialize it if not alredy initialized*/
         if (objectStack == null) {
@@ -998,6 +1000,7 @@ public class Serialization extends SerialClassInfo implements Serializer {
             case LOCALE :
                 ret = new Locale(is.readUTF(),is.readUTF(),is.readUTF());
                 break;
+                /*
             case JDBMLINKEDLIST:
                 ret = LinkedList2.deserialize(is, this);
                 break;
@@ -1007,6 +1010,8 @@ public class Serialization extends SerialClassInfo implements Serializer {
             case BTREE:
                 ret = BTree.readExternal(is,this);
                 break;
+                
+                */
             case BTREE_NODE_LEAF:
                 throw new InternalError("BPage header, wrong serializer used");
             case BTREE_NODE_NONLEAF:
@@ -1227,7 +1232,7 @@ public class Serialization extends SerialClassInfo implements Serializer {
         int size = LongPacker.unpackInt(is);
         // Read class id for components
         int classId = LongPacker.unpackInt(is);
-        Class clazz = classId2class.get(classId);
+        Class clazz = classIdToclass.get(classId);
         if (clazz == null) clazz = Object.class;
 
         Object[] s = (Object[])Array.newInstance(clazz, size);

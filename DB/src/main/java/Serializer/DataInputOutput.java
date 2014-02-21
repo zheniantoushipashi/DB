@@ -244,7 +244,7 @@ import java.util.Arrays;
 
 
     //temp var used for Externalizable
-    SerialClassInfo serializer;
+    SerialClassInfo1 serializer;
     //temp var used for Externalizable
     Serialization.FastArrayList objectStack;
 
@@ -254,6 +254,7 @@ import java.util.Arrays;
         //We could probably implement separate wrapper for this, but I want to safe class space
         return serializer.deserialize(this, objectStack);
     }
+    
 
     public int read() throws IOException {
         //is here just to implement ObjectInput

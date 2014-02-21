@@ -15,18 +15,15 @@
  ******************************************************************************/
 
 package DataStructure;
-
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import Serializer.DataInputOutput;
 import Serializer.SerializationHeader;
 import Serializer.Serializer;
-
 /**
  * Persistent HashMap implementation for DB.
  * Implemented as an H*Tree structure.
@@ -283,7 +280,10 @@ class HTree<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
         }
     }
 
-
+   
+     
+    
+    
     public DBAbstract getRecordManager() {
         return db;
     }
