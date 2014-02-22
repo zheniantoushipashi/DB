@@ -41,7 +41,18 @@ import Serializer.SerializationHeader;
 public class Serialization extends SerialClassInfo1 implements Serializer {
 
 
-    final static int NULL = 0;
+
+
+	public Serialization(ArrayList<ObjectClassInfo> registered) {
+		super(registered);
+		// TODO Auto-generated constructor stub
+	}
+
+	public Serialization() {
+		// TODO Auto-generated constructor stub
+	}
+
+	final static int NULL = 0;
     final static int NORMAL = 1;
     final static int BOOLEAN_TRUE = 2;
     final static int BOOLEAN_FALSE = 3;

@@ -1,15 +1,19 @@
 package Serialization;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import Serializer.ObjectClassInfo;
 import Serializer.Serialization;
 import junit.framework.TestCase;
 
 public class SerializationTest extends TestCase {
 	Serialization ser;
+	
+	ArrayList<ObjectClassInfo> registered;
 
 	public SerializationTest() {
-		ser = new Serialization();
+		ser = new Serialization(registered);
 	}
 
 	public void testInt() throws IOException, ClassNotFoundException {
