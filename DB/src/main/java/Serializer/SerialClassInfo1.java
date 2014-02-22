@@ -16,19 +16,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import DBengine.Database;
 import Serializer.Serialization.FastArrayList;
 
-public class SerialClassInfo1 {
+public abstract class SerialClassInfo1 {
+	Database  db ;
 	public  SerialClassInfo1(){
 		
 	}
 	
 	public SerialClassInfo1(
-			ArrayList<ObjectClassInfo> registered) {
+			ArrayList<ObjectClassInfo> registered) throws Exception {
 		this.registered = registered;
+		String filename = "storeFile3";
+		db = new Database(filename);
 	}
 
-	static final Serializer<ArrayList<ObjectClassInfo>> serializer = new Serializer<ArrayList<ObjectClassInfo>>() {
+	
+	
+	public static final Serializer<ArrayList<ObjectClassInfo>> serializer = new Serializer<ArrayList<ObjectClassInfo>>() {
 		public void serialize(DataOutput out, ArrayList<ObjectClassInfo> obj)
 				throws IOException {
 			LongPacker.packInt(out, obj.size());
@@ -241,6 +247,7 @@ public class SerialClassInfo1 {
 		for (ObjectStreamField f : fields) {
 			// write field ID
 			int fieldId = classInfo.getFieldId(f.getName());
+			/*
 			if (fieldId == -1) {
 				// field does not exists in class definition stored in db,
 				// propably new field was added so add field descriptor
@@ -249,6 +256,7 @@ public class SerialClassInfo1 {
 				db.update(serialClassInfoRecid, (Serialization) this,
 						db.defaultSerializationSerializer);
 			}
+			*/
 			LongPacker.packInt(out, fieldId);
 			// and write value
 			Object fieldValue = getFieldValue(classInfo.getField(fieldId), obj);
@@ -331,4 +339,8 @@ public class SerialClassInfo1 {
 		}
 	}
 
+    protected abstract Object deserialize(DataInput in, FastArrayList objectStack) throws IOException, ClassNotFoundException;
+
+	protected abstract void serialize(DataOutput out, Object fieldValue, FastArrayList objectStack) throws IOException;
+	//
 }

@@ -112,7 +112,7 @@ public class SerialiClassInfoTest extends TestCase {
 	SerialClassInfo1 s;
 	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
 
-	public void setUp() throws IOException {
+	public void setUp() throws Exception {
 		s = new Serialization(registered);
 	}
 

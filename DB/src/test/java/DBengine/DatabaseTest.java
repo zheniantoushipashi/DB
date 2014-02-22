@@ -1,9 +1,12 @@
 package DBengine;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import DataStructure.BTree1;
 import Serializer.DataInputOutput;
+import Serializer.ObjectClassInfo;
+import Serializer.SerialClassInfo1;
 import Serializer.Serialization;
 import Serializer.Serializer;
 import junit.framework.TestCase;
@@ -102,16 +105,22 @@ public class DatabaseTest extends TestCase {
 		Bean2() {
 		}
 	}
+  
+	Serialization s;
+	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
 
+	public void setUp() throws Exception {
+		s = new Serialization(registered);
+	}
+	
 	public void testInsert() throws Exception {
 		Bean1 b1 = new Bean1("孙彪彪", "潘苗苗");
-		String filename = "storeFile3";
+		String filename = "storeFile4";
 		Database database = new Database(filename);
-		Serializer  serializer = new Serialization();
 		DataInputOutput inbuf = new DataInputOutput();
 		DataInputOutput outbuf = new DataInputOutput();
-		long recid = database.insert(b1, serializer, inbuf);
-		Bean1 b2 = (Bean1) database.fetch(recid, serializer, outbuf);
+		long recid = database.insert(b1, s, inbuf);
+		Bean1 b2 = (Bean1) database.fetch(recid, s, outbuf);
 		assertEquals(b1 , b2);
 		
 	}

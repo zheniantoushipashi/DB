@@ -12,7 +12,7 @@ public class SerializationTest extends TestCase {
 	
 	ArrayList<ObjectClassInfo> registered;
 
-	public SerializationTest() {
+	public SerializationTest() throws Exception {
 		ser = new Serialization(registered);
 	}
 

@@ -1,4 +1,4 @@
-package org.apache.jdbm;
+package Serializer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ public class ObjectOutputStream2 extends DataOutputStream implements ObjectOutpu
 
     public void writeObject(Object obj) throws IOException {
         ArrayList registered = new ArrayList();
-        Serialization ser = new Serialization(null,0,registered);
+        Serialization ser = new Serialization();
 
         byte[] data = ser.serialize(obj);
         //write class info first
-        SerialClassInfo.serializer.serialize(this, registered);
+        SerialClassInfo1.serializer.serialize(this, registered);
         //and write data
         write(data);
     }
