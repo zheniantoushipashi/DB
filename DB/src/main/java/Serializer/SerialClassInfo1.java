@@ -21,8 +21,8 @@ import Serializer.Serialization.FastArrayList;
 
 public abstract class SerialClassInfo1 {
 	Database  db ; 
-	public  SerialClassInfo1() throws Exception{
-		
+	public  SerialClassInfo1(ArrayList<ObjectClassInfo> registered) throws Exception{
+		this.registered = registered;
 	}
 	
 	public SerialClassInfo1(

@@ -20,7 +20,10 @@ import java.util.Arrays;
     public DataInputOutput() {
         buf = new byte[8];
     }
-
+    public DataInputOutput(int  buflength) {
+        buf = new byte[buflength];
+    }
+    
     public DataInputOutput(byte[] data) {
         buf = data;
         count = data.length;
@@ -68,8 +71,8 @@ import java.util.Arrays;
     }
 
     public void readFully(byte[] b, int off, int len) throws IOException {
-        System.arraycopy(buf, pos, b, off, len);
-        pos += len;
+        System.arraycopy(b, pos, buf, off, len);
+      //  pos += len;
     }
 
     public int skipBytes(int n) throws IOException {

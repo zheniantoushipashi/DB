@@ -54,7 +54,7 @@ public class SerialiClassInfoTest extends TestCase {
 
 		transient int getCalled = 0;
 		transient int setCalled = 0;
-
+      
 		public String getField2() {
 			getCalled++;
 			return field2;
@@ -64,7 +64,7 @@ public class SerialiClassInfoTest extends TestCase {
 			setCalled++;
 			this.field2 = field2;
 		}
-
+     
 		Bean1(String field1, String field2) {
 			this.field1 = field1;
 			this.field2 = field2;
@@ -117,34 +117,30 @@ public class SerialiClassInfoTest extends TestCase {
 
 	public void testGetFieldValue1() throws Exception {
 		String filename = "storeFile1"; 
-		s = new Serialization(registered, filename);
+		s = new Serialization(registered);
 		assertEquals("aa", s.getFieldValue("field1", b));
 
 	}
 
 	public void testGetFieldValue2() throws Exception {
-		String filename = "storeFile2"; 
-		s = new Serialization(registered, filename);
+		s = new Serialization(registered);
 		assertEquals("bb", s.getFieldValue("field2", b));
 		assertEquals(1, b.getCalled);
 	}
 
 	public void testGetFieldValue3() throws Exception {
-		String filename = "storeFile3"; 
-		s = new Serialization(registered, filename);
+		s = new Serialization(registered);
 		assertEquals("aa", s.getFieldValue("field1", b2));
 	}
 
 	public void testGetFieldValue4() throws Exception {
-		String filename = "storeFile4"; 
-		s = new Serialization(registered, filename);
+		s = new Serialization(registered);
 		assertEquals("bb", s.getFieldValue("field2", b2));
 		assertEquals(1, b2.getCalled);
 	}
 
 	public void testGetFieldValue5() throws Exception {
-		String filename = "storeFile5"; 
-		s = new Serialization(registered, filename);
+		s = new Serialization(registered);
 		assertEquals("cc", s.getFieldValue("field3", b2));
 	}
 

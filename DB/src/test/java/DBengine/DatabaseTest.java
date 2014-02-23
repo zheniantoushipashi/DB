@@ -51,7 +51,7 @@ public class DatabaseTest extends TestCase {
 
 		transient int getCalled = 0;
 		transient int setCalled = 0;
-
+         /*  
 		public String getField2() {
 			getCalled++;
 			return field2;
@@ -61,7 +61,7 @@ public class DatabaseTest extends TestCase {
 			setCalled++;
 			this.field2 = field2;
 		}
-
+      */
 		Bean1(String field1, String field2) {
 			this.field1 = field1;
 			this.field2 = field2;
@@ -107,21 +107,18 @@ public class DatabaseTest extends TestCase {
 	}
   
 	Serialization s;
-	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
-
-	public void setUp() throws Exception {
-		String  filename = "StoreFile6";
-		s = new Serialization(registered, filename );
-	}
 	
+
 	public void testInsert() throws Exception {
 		Bean1 b1 = new Bean1("孙彪彪", "潘苗苗");
 		String filename = "storeFile4";
 		Database database = new Database(filename);
 		DataInputOutput inbuf = new DataInputOutput();
-		DataInputOutput outbuf = new DataInputOutput();
-		long recid = database.insert(b1, s, inbuf);
-		Bean1 b2 = (Bean1) database.fetch(recid, s, outbuf);
+		DataInputOutput outbuf = new DataInputOutput(100);
+		@SuppressWarnings("unchecked")
+		long recid = database.insert(b1, database.serializer, inbuf);
+		@SuppressWarnings("unchecked")
+		Bean1 b2 = (Bean1) database.fetch(recid, database.serializer, outbuf);
 		assertEquals(b1 , b2);
 		
 	}

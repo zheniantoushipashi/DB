@@ -2,9 +2,11 @@ package DBengine;
 
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import Serializer.DataInputOutput;
 import Serializer.LongPacker;
+import Serializer.ObjectClassInfo;
 import Serializer.SerialClassInfo1;
 import Serializer.Serialization;
 import Serializer.Serializer;
@@ -13,10 +15,10 @@ import Store.RecordManager;
 public class Database {
 	RecordManager recordManager ;
 	Serializer  serializer;
+	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
 	public   Database(String  filename) throws Exception{
-	//	if()
 		this.recordManager = new  RecordManager(filename);
-		this.serializer = new  Serialization();
+		this.serializer = new  Serialization(registered);
 	}
 	
 	 /** we need to set reference to this DB instance, so serializer needs to be here*/
@@ -44,7 +46,6 @@ public class Database {
 	
 	
 	public<A>  A  fetch(long  recid, final  Serializer<A> serializer,  final DataInputOutput buf ) throws IOException, ClassNotFoundException{
-		byte[]  buf1 = buf.getBuf();
 		buf.read(recordManager.fetch((int)recid));
 		return serializer.deserialize(buf); 
 	}

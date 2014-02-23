@@ -48,7 +48,8 @@ public class Serialization extends SerialClassInfo1 implements Serializer {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Serialization() throws  Exception{
+	public Serialization(ArrayList<ObjectClassInfo> registered) throws  Exception{
+		super(registered);
 		// TODO Auto-generated constructor stub
 	}
 
