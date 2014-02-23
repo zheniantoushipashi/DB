@@ -110,7 +110,7 @@ public class DatabaseTest extends TestCase {
 	
 
 	public void testInsert() throws Exception {
-		Bean1 b1 = new Bean1("孙彪彪", "潘苗苗");
+		Bean1 b1 = new Bean1("孙彪彪", "潘苗苗苗");
 		String filename = "storeFile4";
 		Database database = new Database(filename);
 		DataInputOutput inbuf = new DataInputOutput();
