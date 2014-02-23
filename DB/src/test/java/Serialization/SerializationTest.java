@@ -13,7 +13,8 @@ public class SerializationTest extends TestCase {
 	ArrayList<ObjectClassInfo> registered;
 
 	public SerializationTest() throws Exception {
-		ser = new Serialization(registered);
+		String  filename = "storeFile1";
+		ser = new Serialization(registered, filename);
 	}
 
 	public void testInt() throws IOException, ClassNotFoundException {

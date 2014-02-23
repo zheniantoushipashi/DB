@@ -14,6 +14,7 @@ public class Database {
 	RecordManager recordManager ;
 	Serializer  serializer;
 	public   Database(String  filename) throws Exception{
+	//	if()
 		this.recordManager = new  RecordManager(filename);
 		this.serializer = new  Serialization();
 	}

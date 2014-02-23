@@ -110,7 +110,8 @@ public class DatabaseTest extends TestCase {
 	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
 
 	public void setUp() throws Exception {
-		s = new Serialization(registered);
+		String  filename = "StoreFile6";
+		s = new Serialization(registered, filename );
 	}
 	
 	public void testInsert() throws Exception {

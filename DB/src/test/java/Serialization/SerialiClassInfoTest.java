@@ -112,56 +112,59 @@ public class SerialiClassInfoTest extends TestCase {
 	SerialClassInfo1 s;
 	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
 
-	public void setUp() throws Exception {
-		s = new Serialization(registered);
-	}
-
 	Bean1 b = new Bean1("aa", "bb");
 	Bean2 b2 = new Bean2("aa", "bb", "cc");
-/*
-	public void testGetFieldValue1() throws Exception {
 
+	public void testGetFieldValue1() throws Exception {
+		String filename = "storeFile1"; 
+		s = new Serialization(registered, filename);
 		assertEquals("aa", s.getFieldValue("field1", b));
-		;
+
 	}
 
 	public void testGetFieldValue2() throws Exception {
+		String filename = "storeFile2"; 
+		s = new Serialization(registered, filename);
 		assertEquals("bb", s.getFieldValue("field2", b));
 		assertEquals(1, b.getCalled);
 	}
 
 	public void testGetFieldValue3() throws Exception {
+		String filename = "storeFile3"; 
+		s = new Serialization(registered, filename);
 		assertEquals("aa", s.getFieldValue("field1", b2));
 	}
 
 	public void testGetFieldValue4() throws Exception {
+		String filename = "storeFile4"; 
+		s = new Serialization(registered, filename);
 		assertEquals("bb", s.getFieldValue("field2", b2));
 		assertEquals(1, b2.getCalled);
 	}
 
 	public void testGetFieldValue5() throws Exception {
+		String filename = "storeFile5"; 
+		s = new Serialization(registered, filename);
 		assertEquals("cc", s.getFieldValue("field3", b2));
 	}
-	
-	*/
-	
-	<E> E serialize(E e) throws ClassNotFoundException, IOException {
-        Serialization s2 = new Serialization();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        s2.serialize(new DataOutputStream(out), e);
 
-        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-        return (E) s2.deserialize(new DataInputStream(in));
-
-    }
-
-	  public void testRecursion() throws Exception {
-	        AbstractMap.SimpleEntry b = new AbstractMap.SimpleEntry("abcd", null);
-	        b.setValue(b.getKey());
-
-	        AbstractMap.SimpleEntry bx = serialize(b);
-	        assertEquals(bx, b);
-	        assert (bx.getKey() == bx.getValue());
-
-	    }
+	/*
+	 * 
+	 * <E> E serialize(E e) throws ClassNotFoundException, IOException {
+	 * Serialization s2 = new Serialization(); ByteArrayOutputStream out = new
+	 * ByteArrayOutputStream(); s2.serialize(new DataOutputStream(out), e);
+	 * 
+	 * ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+	 * return (E) s2.deserialize(new DataInputStream(in));
+	 * 
+	 * }
+	 * 
+	 * public void testRecursion() throws Exception { AbstractMap.SimpleEntry b
+	 * = new AbstractMap.SimpleEntry("abcd", null); b.setValue(b.getKey());
+	 * 
+	 * AbstractMap.SimpleEntry bx = serialize(b); assertEquals(bx, b); assert
+	 * (bx.getKey() == bx.getValue());
+	 * 
+	 * }
+	 */
 }

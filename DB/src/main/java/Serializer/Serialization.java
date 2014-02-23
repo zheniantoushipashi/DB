@@ -43,12 +43,12 @@ public class Serialization extends SerialClassInfo1 implements Serializer {
 
 
 
-	public Serialization(ArrayList<ObjectClassInfo> registered) throws Exception {
-		super(registered);
+	public Serialization(ArrayList<ObjectClassInfo> registered ,String filename) throws Exception {
+		super(registered, filename);
 		// TODO Auto-generated constructor stub
 	}
 
-	public Serialization() {
+	public Serialization() throws  Exception{
 		// TODO Auto-generated constructor stub
 	}
 

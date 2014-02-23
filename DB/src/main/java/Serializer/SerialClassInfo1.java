@@ -20,16 +20,18 @@ import DBengine.Database;
 import Serializer.Serialization.FastArrayList;
 
 public abstract class SerialClassInfo1 {
-	Database  db ;
-	public  SerialClassInfo1(){
+	Database  db ; 
+	public  SerialClassInfo1() throws Exception{
 		
 	}
 	
 	public SerialClassInfo1(
-			ArrayList<ObjectClassInfo> registered) throws Exception {
+			ArrayList<ObjectClassInfo> registered, String  filename) throws Exception {
 		this.registered = registered;
-		String filename = "storeFile3";
-		db = new Database(filename);
+		if(db == null){
+			db = new Database(filename);
+		}
+		
 	}
 
 	
