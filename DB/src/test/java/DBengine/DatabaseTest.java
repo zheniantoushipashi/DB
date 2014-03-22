@@ -111,9 +111,9 @@ public class DatabaseTest extends TestCase {
 
 	public void testInsert() throws Exception {
 		Bean1 b1 = new Bean1("孙彪彪", "潘苗苗苗");
-		String filename = "storeFile4";
+		String filename = "storeFile5";
 		Database database = new Database(filename);
-		DataInputOutput inbuf = new DataInputOutput();
+		DataInputOutput inbuf = new DataInputOutput(100);
 		DataInputOutput outbuf = new DataInputOutput(100);
 		@SuppressWarnings("unchecked")
 		long recid = database.insert(b1, database.serializer, inbuf);
