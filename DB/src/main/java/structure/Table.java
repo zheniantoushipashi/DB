@@ -1,14 +1,19 @@
 package structure;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import ValueType.Value;
 import DBengine.DbObject;
-
-public class Table extends DbObject {
+public class Table extends DbObject implements Serializable {
 	
 	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * The table type that means this table is a regular persistent table.
      */
     public static final int TYPE_CACHED = 0;
@@ -54,7 +59,7 @@ public class Table extends DbObject {
    
     protected boolean  isHidden;
     
-    private  final HashMap<String, Column> columnMap = null;
+    private  final HashMap<String, Column> columnMap = new HashMap<String, Column>();
     private Column rowIdColumn;
     
     
@@ -149,7 +154,26 @@ public class Table extends DbObject {
       
         return column;
     }
-
+    
+    public boolean equals(Object o){
+    	
+    	if(this == o){
+    		return  true;
+    	}
+    	if(o == null || getClass() != o.getClass()){
+    		return false;
+    	}
+    	Table e = (Table)o;
+    	for(int i = 0; i < this.columns.length; i++){
+    		if(this.columns[i].equals(e.columns[i]))
+    			return false;
+    	}
+    	
+    	return  true;
+    }
+    
+   
+	
     
     
    

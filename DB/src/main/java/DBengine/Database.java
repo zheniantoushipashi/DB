@@ -14,7 +14,7 @@ import Store.RecordManager;
 
 public class Database {
 	RecordManager recordManager ;
-	Serializer  serializer;
+	public Serializer  serializer;
 	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
 	public   Database(String  filename) throws Exception{
 		this.recordManager = new  RecordManager(filename);

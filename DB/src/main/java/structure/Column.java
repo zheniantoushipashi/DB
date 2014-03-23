@@ -1,10 +1,13 @@
 package structure;
-
-import java.sql.ResultSetMetaData;
+import java.io.Serializable;
 
 import ValueType.Value;
-public class Column {
-    public  static  final  String  ROWID = "_ROWID_";
+public class Column implements Serializable  {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public  static  final  String  ROWID = "_ROWID_";
     public  static  final int NOT_NULLABLE = 1;
     public  static  final  int NULLABLE = 2;
     
