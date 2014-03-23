@@ -1,6 +1,8 @@
 package structure;
 
 import java.sql.ResultSetMetaData;
+
+import ValueType.Value;
 public class Column {
     public  static  final  String  ROWID = "_ROWID_";
     public  static  final int NOT_NULLABLE = 1;
@@ -18,7 +20,6 @@ public class Column {
     private   boolean  autoIncrement;
     
     private long  increment;
-    private Sequence  sequence;
     private  boolean  primaryKey;
     
     public  Column(String name, int type){
@@ -57,38 +58,9 @@ public class Column {
         return table.getId() ^ name.hashCode();
     }
 
-    public Column getClone() {
-        Column newColumn = new Column(name, type, precision, scale, displaySize);
-        newColumn.copy(this);
-        return newColumn;
-    }
-    
-    public void copy(Column source) {
-    	//16个字段，还有7个字段未copy，分别是: type、table、columnId、autoIncrement、start、increment、resolver
-        checkConstraint = source.checkConstraint;
-        checkConstraintSQL = source.checkConstraintSQL;
-        displaySize = source.displaySize;
-        name = source.name;
-        precision = source.precision;
-        scale = source.scale;
-        // table is not set
-        // columnId is not set
-        nullable = source.nullable;
-        defaultExpression = source.defaultExpression;
-        originalSQL = source.originalSQL;
-        // autoIncrement, start, increment is not set
-        convertNullToDefault = source.convertNullToDefault;
-        sequence = source.sequence;
-        comment = source.comment;
-        computeTableFilter = source.computeTableFilter;
-        isComputed = source.isComputed;
-        selectivity = source.selectivity;
-        primaryKey = source.primaryKey;
-    }
-    
     
     public  Value convert(ValueType.Value v){
-    	return  v.convertTo(type);
+    	return  v.convertType(type);
     	
     }
     
@@ -103,10 +75,6 @@ public class Column {
     
     public int getColumnId() {
         return columnId;
-    }
-
-    public String getSQL() {
-        return Parser.quoteIdentifier(name);
     }
 
     public String getName() {
@@ -142,13 +110,5 @@ public class Column {
         this.name = newName;
     }
 
-    public void setSequence(Sequence sequence) {
-        this.sequence = sequence;
-    }
-
-    public Sequence getSequence() {
-        return sequence;
-    }
-       
 
 }

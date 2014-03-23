@@ -1,10 +1,10 @@
 package DBengine;
-public interface DbObject {
+abstract public class  DbObject {
 
 	 /**
      * The object is of the type table or view.
      */
-    int TABLE_OR_VIEW = 0;
+   public static  int TABLE_OR_VIEW = 0;
 
     /**
      * This object is an index.
@@ -83,85 +83,67 @@ public interface DbObject {
      * @return the SQL name
      */
     
-    /**
-     * Get the database.
-     *
-     * @return the database
-     */
-    Database getDatabase();
+  
     
     
 
-    /**
-     * Get the unique object id.
-     *
-     * @return the object id
-     */
-    int getId();
-
-    /**
-     * Get the name.
-     *
-     * @return the name
-     */
-    String getName();
     
-    /**
-     * Construct the original CREATE ... SQL statement for this object.
-     *
-     * @return the SQL statement
-     */
-    String getCreateSQL();
-
-    /**
-     * Construct a DROP ... SQL statement for this object.
-     *
-     * @return the SQL statement
-     */
-    String getDropSQL(); //只看到org.h2.command.dml.ScriptCommand中有使用
-
+    
+  
     /**
      * Get the object type.
      *
      * @return the object type
      */
-    int getType();
+    abstract  public  int getType();
 
   
-    void checkRename();
+  
+
+    public void rename(String newName) {
+        objectName = newName;
+    }
+   
+
+    
+   
+    public Database getDatabase() {
+        return database;
+    }
+
+    
+    public int getId() {
+        return id;
+    }
+
+    
+    public String getName() {
+        return objectName;
+    }
+    
+    /**
+     * The database.
+     */
+    protected Database database;
+
+
+
+    private int id;
+    protected String objectName;
+    private long modificationId;
+    private boolean temporary;
 
     /**
-     * Rename the object.
+     * Initialize some attributes of this object.
      *
-     * @param newName the new name
+     * @param db the database
+     * @param objectId the object id
+     * @param name the name
+     * @param traceModule the trace module name
      */
-    void rename(String newName);
-
-    /**
-     * Check if this object is temporary (for example, a temporary table).
-     *
-     * @return true if is temporary
-     */
-    boolean isTemporary();
-
-    /**
-     * Tell this object that it is temporary or not.
-     *
-     * @param temporary the new value
-     */
-    void setTemporary(boolean temporary);
-
-    /**
-     * Change the comment of this object.
-     *
-     * @param comment the new comment, or null for no comment
-     */
-    void setComment(String comment);
-
-    /**
-     * Get the current comment of this object.
-     *
-     * @return the comment, or null if not set
-     */
-    String getComment();
+    protected void initDbObjectBase(Database db, int objectId, String name ) {
+        this.database = db;
+        this.id = objectId;
+        this.objectName = name;
+    }
 }
