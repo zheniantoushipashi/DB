@@ -1,6 +1,8 @@
 package BtreeIndex;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 public class PageBtreeIndex {
 	/**
 	 * 
@@ -221,6 +223,105 @@ public class PageBtreeIndex {
 				p.contents = Arrays
 						.copyOf(newRoot.toBytes(), p.contents.length);
 			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String levelOrderTraverse() throws Exception {
+		String output = "";
+		Page p = pages.getIndexedPage(rootPage);
+		PageBtree root = PageBtree.fromBytes(p.contents, pages, treeOrder);
+		Queue<PageBtree> curLevel = new LinkedList<PageBtree>();
+		curLevel.add(root);
+		Queue<PageBtree> nextLevel = new LinkedList<PageBtree>();
+		Queue<String> curLine = new LinkedList<String>();
+		do {
+			while (!curLevel.isEmpty()) {
+				PageBtree curNode = curLevel.poll();
+				if (!curNode.isLeaf()) { // node is not a leaf
+					curLine.add(String.valueOf(curNode.pointers()[0]));
+					nextLevel.add(curNode.getNode(curNode.pointers()[0]));
+					for (int i = 0; i < curNode.numElements() - 1; i++) {
+						curLine.add(curNode.keys()[i] + "("
+								+ curNode.pointers()[i + 1] + ")");
+						nextLevel
+								.add(curNode.getNode(curNode.pointers()[i + 1]));
+					}
+				} else { // node is a leaf
+					for (int i = 0; i < curNode.numElements(); i++) {
+						curLine.add(curNode.keys()[i] + "("
+								+ curNode.pointers()[i] + ")");
+					}
+				}
+				while (!curLine.isEmpty()) {
+					output += curLine.poll();
+					if (!curLine.isEmpty())
+						output += ", ";
+				}
+				output += "\n";
+			}
+			curLevel = nextLevel;
+			nextLevel = new LinkedList<PageBtree>();
+		} while (!curLevel.isEmpty());
+		return output;
+	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @throws Exception
+	 */
+	public void delete(int key) throws Exception {
+		Page p = pages.getIndexedPage(rootPage);
+		PageBtree root = PageBtree.fromBytes(p.contents, pages, treeOrder);
+		if (!root.isLeaf()) { // root is not a leaf
+			try {
+				root.delete(key);
+				p.contents = Arrays.copyOf(root.toBytes(), p.contents.length);
+			} catch (InternalUnderflowException e) {
+				// since this is the root, if it underflows, we need to change
+				// it to a leaf.
+				PageBtreeLeaf node = new PageBtreeLeaf(pages, treeOrder);
+				node.isRoot(true);
+				int iterator = 0;
+				if (root.numElements() == 0) {
+					// We've got problems if the root has no pointers on it
+					throw new Exception();
+				} else {
+					PageBtree child = root.getNode(root.pointers()[0]);
+					if (child.isLeaf()) { // children are leaves. Grab pointers
+											// from children
+						for (int i = 0; i < root.numElements(); i++) {
+							child = root.getNode(root.pointers()[i]);
+							for (int j = 0; j < child.numElements(); j++) {
+								node.keys()[iterator] = child.keys()[j];
+								node.pointers()[iterator] = child.pointers()[j];
+								iterator++;
+							}
+						}
+						p.contents = Arrays.copyOf(node.toBytes(),
+								p.contents.length);
+					} else { // children are internal nodes. There should only
+								// be one internal node left. Make it root.
+						PageBtreeNode newRoot = (PageBtreeNode) child;
+						pages.deletePage(rootPage); // delete old root from
+													// pages
+						rootPage = root.pointers()[0]; // set new root reference
+						newRoot.isRoot(true);
+						p = pages.getIndexedPage(rootPage);
+						p.contents = Arrays.copyOf(newRoot.toBytes(),
+								p.contents.length);
+					}
+				}
+			}
+		} else { // root is a leaf
+					// This makes things rather easy. Just delete it.
+			root.delete(key);
+			p.contents = Arrays.copyOf(root.toBytes(), p.contents.length);
 		}
 	}
 
