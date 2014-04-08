@@ -1,7 +1,7 @@
 package structure;
 import Store.PageBuffer;
 import ValueType.Value;
-public class Row {
+public class Row implements  SearchRow {
     private  long  key;
     private  Value  searchColumn;
     public Value getSearchColumn() {
@@ -52,6 +52,26 @@ public class Row {
     public Value[] getValueList() {
         return data;
     }
+	public Value getValue(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public void setValue(int index, Value v) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void setKeyAndVersion(SearchRow old) {
+		// TODO Auto-generated method stub
+		
+	}
+	public int getVersion() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	public int getMemory() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
     
     
 }

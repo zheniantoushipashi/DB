@@ -12,7 +12,7 @@ import javax.crypto.Cipher;
 
 import ValueType.Value;
 
-public final class PageBuffer {
+public  class PageBuffer {
 	private long pageId;
 	public ByteBuffer data;
 	private boolean dirty = false;
