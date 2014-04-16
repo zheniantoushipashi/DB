@@ -1,14 +1,17 @@
 package BtreeIndex;
 import java.util.ArrayList;
 import java.util.Collections;
+
 import junit.framework.TestCase;
 
 public class PageBtreeIndexTest extends TestCase {
 	static PageBtreeIndex treeUnderTest;
 
-	public static void testPageBtreeIndexInsert() throws Exception {
-
+	public void setUp() throws Exception {
 		treeUnderTest = new PageBtreeIndex();
+	}
+	public static void testPageBtreeIndexInsert() throws Exception {
+		System.out.println("---------------------------------------------------");
 		// Test adding 3 elements, non-ordered
 		int[] addQueue = new int[] { 3, 9, 6 };
 		for (int i = 0; i < addQueue.length; i++) {
@@ -81,6 +84,7 @@ public class PageBtreeIndexTest extends TestCase {
 		}
 
 		treeUnderTest.levelOrderTraverse();
+		System.out.println("---------------------------------------------------");
 
 	}
 	
@@ -88,6 +92,8 @@ public class PageBtreeIndexTest extends TestCase {
 	 * Test method for {@link edu.ku.eecs.db.APlusTree.APlusTree#insert(int, int)}.
 	 * @throws Exception 
 	 */
+	
+	
 	public void testReverseInsert() throws Exception {
 		// Test adding 18 elements, descending order
 		int numElements = 18;

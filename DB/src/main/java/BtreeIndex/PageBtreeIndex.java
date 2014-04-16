@@ -164,7 +164,7 @@ public class PageBtreeIndex {
 				PageBtreeLeaf bigLeaf = new PageBtreeLeaf(pages, treeOrder);
 				int insertIndex = node.insertionPoint(key); // find insertion
 															// point
-				int nodeTransitionIndex = (int) Math.ceil(treeOrder / 2);
+				int nodeTransitionIndex = (int) Math.ceil(treeOrder / 2) ;
 				int iterator = 0;
 				for (int i = 0; i <= treeOrder; i++) {
 					if (i == insertIndex) {
@@ -214,6 +214,7 @@ public class PageBtreeIndex {
 																					// to
 																					// the
 																					// root
+				//newRoot.keys()[0] = bigLeaf.keys()[0];
 				newRoot.pointers()[0] = tinyPage;
 				newRoot.pointers()[1] = bigPage;
 				p.contents = Arrays
@@ -239,17 +240,19 @@ public class PageBtreeIndex {
 			while (!curLevel.isEmpty()) {
 				PageBtree curNode = curLevel.poll();
 				if (!curNode.isLeaf()) { // node is not a leaf
-					curLine.add(String.valueOf(curNode.pointers()[0]));
+					
+					curLine.add(String.valueOf("指向的页面号(" + curNode.pointers()[0] + ")"));
 					nextLevel.add(curNode.getNode(curNode.pointers()[0]));
 					for (int i = 0; i < curNode.numElements() - 1; i++) {
-						curLine.add(curNode.keys()[i] + "("
+						curLine.add("内节点的值为,"+curNode.keys()[i] + ", 指向的页面号("
 								+ curNode.pointers()[i + 1] + ")");
 						nextLevel
 								.add(curNode.getNode(curNode.pointers()[i + 1]));
 					}
 				} else { // node is a leaf
 					for (int i = 0; i < curNode.numElements(); i++) {
-						curLine.add(curNode.keys()[i] + "("
+						
+						curLine.add("key"+curNode.keys()[i] + " value("
 								+ curNode.pointers()[i] + ")");
 					}
 				}
