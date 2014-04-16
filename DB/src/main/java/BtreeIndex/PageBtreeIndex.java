@@ -58,10 +58,6 @@ public class PageBtreeIndex {
 		Page p = pages.getIndexedPage(rootPage);
 		PageBtree  root = PageBtree.fromBytes(p.contents, pages, treeOrder);
 		root.isRoot(true);
-		if(!root.isLeaf()){
-			PageBtreeNode node = (PageBtreeNode)root;
-			node.insert(key, value);
-		}
 		if (!root.isLeaf()) {
 			PageBtreeNode node = (PageBtreeNode)root;
 			try {
@@ -267,6 +263,7 @@ public class PageBtreeIndex {
 			curLevel = nextLevel;
 			nextLevel = new LinkedList<PageBtree>();
 		} while (!curLevel.isEmpty());
+		System.out.println(output);
 		return output;
 	}
 	
