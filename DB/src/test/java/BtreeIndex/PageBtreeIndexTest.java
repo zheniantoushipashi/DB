@@ -10,6 +10,8 @@ public class PageBtreeIndexTest extends TestCase {
 	public void setUp() throws Exception {
 		treeUnderTest = new PageBtreeIndex();
 	}
+	
+	/*
 	public static void testPageBtreeIndexInsert() throws Exception {
 		System.out.println("---------------------------------------------------");
 		// Test adding 3 elements, non-ordered
@@ -88,10 +90,6 @@ public class PageBtreeIndexTest extends TestCase {
 
 	}
 	
-	/**
-	 * Test method for {@link edu.ku.eecs.db.APlusTree.APlusTree#insert(int, int)}.
-	 * @throws Exception 
-	 */
 	
 	
 	public void testReverseInsert() throws Exception {
@@ -108,10 +106,6 @@ public class PageBtreeIndexTest extends TestCase {
 		
 	}
 	
-	/**
-	 * Test method for {@link edu.ku.eecs.db.APlusTree.APlusTree#insert(int, int)}.
-	 * @throws Exception 
-	 */
 	public void testSequentialInsert() throws Exception {
 		// Test adding 18 elements, ascending order
 		int numElements = 18;
@@ -125,10 +119,7 @@ public class PageBtreeIndexTest extends TestCase {
 		}
 	}
 	
-	/**
-	 * Test method for {@link edu.ku.eecs.db.APlusTree.APlusTree#insert(int, int)}.
-	 * @throws Exception 
-	 */
+	
 	public void testRandomInsert() throws Exception {
 		// Test adding 18 elements, random order
 		int numElements = 18;
@@ -147,10 +138,7 @@ public class PageBtreeIndexTest extends TestCase {
 	}
 	
 	
-	/**
-	 * Test method for {@link edu.ku.eecs.db.APlusTree.APlusTree#search(int)}.
-	 * @throws Exception 
-	 */
+	
 	public void testSearch() throws Exception {
 		// Test adding 50 elements, random order
 		int numElements = 50;
@@ -173,10 +161,7 @@ public class PageBtreeIndexTest extends TestCase {
 		}
 	}
 
-	/**
-	 * Test method for {@link edu.ku.eecs.db.APlusTree.APlusTree#delete(int)}.
-	 * @throws Exception 
-	 */
+	
 	public void testDescendingDelete() throws Exception {
 		// Test adding and deleting 18 elements, descending order
 		int numElements = 18;
@@ -193,10 +178,6 @@ public class PageBtreeIndexTest extends TestCase {
 		}
 	}
 
-	/**
-	 * Test method for {@link edu.ku.eecs.db.APlusTree.APlusTree#delete(int)}.
-	 * @throws Exception 
-	 */
 	public void testAscendingDelete() throws Exception {
 		// Test adding and deleting 18 elements, ascending order
 		int numElements = 18;
@@ -211,42 +192,51 @@ public class PageBtreeIndexTest extends TestCase {
 			assertEquals(-1, treeUnderTest.search(i));
 		}
 	}
-
-	/**
-	 * Test method for {@link edu.ku.eecs.db.APlusTree.APlusTree#delete(int)}.
-	 * @throws Exception 
-	 */
+*/
+	
 	public void testInternalDeleteBorrowLeft() throws Exception {
 		// Test internal node borrowing from left
 		int numElements = 12;
 		for (int i=0; i<numElements; i++) {
 			treeUnderTest.insert(i, i+1);
 		}
+		
+		treeUnderTest.levelOrderTraverse();
 		treeUnderTest.delete(0);
-		System.out.println(treeUnderTest.levelOrderTraverse());
+		
+		treeUnderTest.levelOrderTraverse();
 		for (int i=numElements-1; i>0; i--) {
 			treeUnderTest.delete(i);
 			assertEquals(-1, treeUnderTest.search(i));
 		}
+		
+		treeUnderTest.levelOrderTraverse();
 	}
 
 	/**
 	 * Test method for {@link edu.ku.eecs.db.APlusTree.APlusTree#delete(int)}.
 	 * @throws Exception 
 	 */
+	
+	/*
 	public void testInternalDeleteBorrowRight() throws Exception {
 		// Test internal node borrowing from right
 		int numElements = 12;
 		for (int i=0; i<numElements; i++) {
 			treeUnderTest.insert(i, i+1);
 		}
+		
+		treeUnderTest.levelOrderTraverse();
 		treeUnderTest.delete(11);
-		System.out.println(treeUnderTest.levelOrderTraverse());
+		treeUnderTest.levelOrderTraverse();
+		
+		
 		treeUnderTest.delete(0);
-		System.out.println(treeUnderTest.levelOrderTraverse());
+		
 		assertEquals(-1, treeUnderTest.search(0));
 		assertEquals(-1, treeUnderTest.search(11));
 	}
 
+*/
 
 }

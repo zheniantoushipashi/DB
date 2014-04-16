@@ -240,7 +240,7 @@ public class PageBtreeIndex {
 			while (!curLevel.isEmpty()) {
 				PageBtree curNode = curLevel.poll();
 				if (!curNode.isLeaf()) { // node is not a leaf
-					
+					//curLine.add("这个节点的页面号为\n"+curNode.);
 					curLine.add(String.valueOf("指向的页面号(" + curNode.pointers()[0] + ")"));
 					nextLevel.add(curNode.getNode(curNode.pointers()[0]));
 					for (int i = 0; i < curNode.numElements() - 1; i++) {
