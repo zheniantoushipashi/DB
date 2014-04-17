@@ -1,4 +1,4 @@
-package sunbiao.DB;
+package store;
 import Store.RecordManager;
 import junit.framework.TestCase;
 
@@ -6,8 +6,11 @@ public class RecordManagerTest extends TestCase {
 	   
 	public void testGetRecordById() throws Exception {
 		RecordManager recordManager = new RecordManager();
-		recordManager.insert("sunbiaobiao".getBytes());
+		int rowOne = recordManager.insert("sunbiaobiao".getBytes());
+		assertEquals(new String(recordManager.fetch(rowOne)),"sunbiaobiao" );
+		
 		recordManager.insert("panmiaomiaomiao".getBytes());
+	  
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
@@ -27,9 +30,11 @@ public class RecordManagerTest extends TestCase {
 		int RowNum19 = recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
 		assertEquals(new String(recordManager.fetch(RowNum17)),"you are a little dog " );
 		assertEquals(new String(recordManager.fetch(RowNum16)),"aaaaa" );
+	
 		assertEquals(new String(recordManager.fetch(RowNum15)),"panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf");
-		recordManager.releaseClose();
-		recordManager.getFilepageManager().commit();
+		
+		//recordManager.releaseClose();
+		//recordManager.getFilepageManager().commit();
 	}
 	
 	/*

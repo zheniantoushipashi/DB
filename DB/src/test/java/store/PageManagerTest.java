@@ -1,4 +1,4 @@
-package sunbiao.DB;
+package store;
 
 import Store.PageBuffer;
 import Store.PageManager;

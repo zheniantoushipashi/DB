@@ -179,11 +179,16 @@ public class RecordManager {
 	}
 
 	public byte[] getRecordById(int pageId, int RecordId) throws IOException {
-		PageBuffer pgB = (filepageManager.inUse.get(pageId) == null) ? filepageManager.get(pageId)
-				: filepageManager.inUse.get(pageId);
+		//PageBuffer pgB = (filepageManager.inUse.get(pageId) == null) ? filepageManager.get(pageId)
+		//		: filepageManager.inUse.get(pageId);
+		PageBuffer  pgB = filepageManager.get(pageId);
 		int offset = pgB.readInt(RecordId);
 		int length = pgB.readInt(RecordId + 4);
-		return pgB.readByteArray(new byte[length], 0, offset, length);
+		
+		byte[] data = pgB.readByteArray(new byte[length], 0, offset, length);
+		filepageManager.release(pageId, true);
+		return  data;
+		
 	}
 
 	public void displayAllRow() throws Exception {
