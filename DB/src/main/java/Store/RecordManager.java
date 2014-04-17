@@ -3,6 +3,8 @@ package Store;
 import java.io.IOException;
 import java.util.Iterator;
 
+import Util.readProperty;
+
 public class RecordManager {
 	int PAGE_SIZE_SHIFT = 12;
 	/**
@@ -28,10 +30,10 @@ public class RecordManager {
 	 */
 	public final int offsetSizeIndex = 2 * bytesOfInt;
 
-	private final PageManager pageManager;
+	private final PageSize pageSize;
 
-	public PageManager getPageManager() {
-		return pageManager;
+	public PageSize getpageSize() {
+		return pageSize;
 	}
 
 	private RowNumMap rowNumMap;
@@ -44,36 +46,45 @@ public class RecordManager {
 		this.rowNumMap = rowNumMap;
 	}
 
-	PageFile file;
+    PageManager filepageManager;
+	
+	public PageManager getFilepageManager() {
+		return filepageManager;
+	}
 
+	public void setFilepageManager(PageManager filepageManager) {
+		this.filepageManager = filepageManager;
+	}
+
+	readProperty readPro = new readProperty();
 	public RecordManager() throws Exception {
-		pageManager = new PageManager(file);
-		rowNumMap = new RowNumMap(file);
+		this.filepageManager = new PageManager(readPro.getDbFilename());
+		pageSize = new PageSize(filepageManager);
+		rowNumMap = new RowNumMap(filepageManager);
 	}
-
-	public RecordManager(String filename) throws Exception {
-		this.file = new PageFile(filename);
-		pageManager = new PageManager(file);
-		rowNumMap = new RowNumMap(file);
-	}
-
 	/*
 	 * 
 	 * 
 	 * 插入一条记录
 	 */
-	public int insert(final byte[] data) throws Exception {
-		int EnoughSpacePageId = pageManager.findEnoughSpacePage(data.length);
-		PageBuffer pgB = (file.inUse.get(EnoughSpacePageId) == null) ? file
-				.get(EnoughSpacePageId) : file.inUse.get(EnoughSpacePageId);
+	public int insert(final byte[] data) throws Exception {		
+		int EnoughSpacePageId = pageSize.findEnoughSpacePage(data.length);		
+	//	PageBuffer pgB = (filepageManager.inUse.get(EnoughSpacePageId) == null) ? filepageManager
+	//			.get(EnoughSpacePageId) : filepageManager.inUse.get(EnoughSpacePageId);
+		PageBuffer  pgB = filepageManager.get(EnoughSpacePageId);
+		writeHeader(pgB);
 		fillRecord(pgB, data);
 		int InsertRowNum = rowNumMap.RegisterMapWhenInsert(EnoughSpacePageId,
 				findFreeIndex(pgB));
-		pageManager.setPageSize(EnoughSpacePageId * 4, getAvailableSize(pgB));
+		pageSize.setPageSize(EnoughSpacePageId * 4, getAvailableSize(pgB));
+		filepageManager.release(EnoughSpacePageId, true);
 		return InsertRowNum;
-
 	}
 
+	void  writeHeader(PageBuffer  pgB){
+		pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
+		pgB.writeInt(FreeSpaceBeginPointer, 0);
+	}
     void  fillRecord(PageBuffer pgB , byte[]  data){
     	pgB.writeByteArray(data, 0, this.findFreePosition(pgB), data.length);
 		pgB.writeInt(this.findFreeIndex(pgB) - offsetSizeIndex,
@@ -85,11 +96,11 @@ public class RecordManager {
 				- offsetSizeIndex);	
     }
 	public void releaseClose() throws IOException {
-		Iterator<PageBuffer> iter = file.inUse.valuesIterator();
+		Iterator<PageBuffer> iter = filepageManager.inUse.valuesIterator();
 		while (iter.hasNext()) {
-			file.release(iter.next().getPageId(), true);
+			filepageManager.release(iter.next().getPageId(), true);
 		}
-		file.close();
+		filepageManager.close();
 	}
 
 	/*
@@ -118,18 +129,18 @@ public class RecordManager {
 	public void update(int RowNum, byte[] bytes) throws Exception {
 		int currentPageNum = rowNumMap.FindPageIdByRowNum(RowNum);
 		int currentRecordNum = rowNumMap.FindRecordIdByRowNum(RowNum);
-		PageBuffer pgB = (file.inUse.get(currentPageNum) == null) ? file.get(currentPageNum)
-				: file.inUse.get(currentPageNum);
+		PageBuffer pgB = (filepageManager.inUse.get(currentPageNum) == null) ? filepageManager.get(currentPageNum)
+				: filepageManager.inUse.get(currentPageNum);
 		int offset = pgB.readInt(currentRecordNum);
 		int length = pgB.readInt(currentRecordNum + 4);
         if(bytes.length > length){
-        	int EnoughSpacePageId = pageManager.findEnoughSpacePage(bytes.length);
-        	PageBuffer pgBtmp = (file.inUse.get(EnoughSpacePageId) == null) ? file
-    				.get(EnoughSpacePageId) : file.inUse.get(EnoughSpacePageId);
+        	int EnoughSpacePageId = pageSize.findEnoughSpacePage(bytes.length);
+        	PageBuffer pgBtmp = (filepageManager.inUse.get(EnoughSpacePageId) == null) ? filepageManager
+    				.get(EnoughSpacePageId) : filepageManager.inUse.get(EnoughSpacePageId);
     		fillRecord(pgBtmp, bytes);
     		rowNumMap.modifyMapPageNum(RowNum, EnoughSpacePageId);
     		rowNumMap.modifyMapRecordNum(RowNum, findFreeIndex(pgBtmp));
-    		pageManager.setPageSize(EnoughSpacePageId * 4, getAvailableSize(pgBtmp));
+    		pageSize.setPageSize(EnoughSpacePageId * 4, getAvailableSize(pgBtmp));
         }
         else{
         	pgB.writeByteArray(bytes, 0, offset, bytes.length);
@@ -168,8 +179,8 @@ public class RecordManager {
 	}
 
 	public byte[] getRecordById(int pageId, int RecordId) throws IOException {
-		PageBuffer pgB = (file.inUse.get(pageId) == null) ? file.get(pageId)
-				: file.inUse.get(pageId);
+		PageBuffer pgB = (filepageManager.inUse.get(pageId) == null) ? filepageManager.get(pageId)
+				: filepageManager.inUse.get(pageId);
 		int offset = pgB.readInt(RecordId);
 		int length = pgB.readInt(RecordId + 4);
 		return pgB.readByteArray(new byte[length], 0, offset, length);

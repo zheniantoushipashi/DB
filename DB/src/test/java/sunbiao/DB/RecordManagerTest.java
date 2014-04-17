@@ -2,11 +2,10 @@ package sunbiao.DB;
 import Store.RecordManager;
 import junit.framework.TestCase;
 
-public class RecordManagerTest1 extends TestCase {
+public class RecordManagerTest extends TestCase {
 	   
 	public void testGetRecordById() throws Exception {
-		String filename = "storeFile3";
-		RecordManager recordManager = new RecordManager(filename);
+		RecordManager recordManager = new RecordManager();
 		recordManager.insert("sunbiaobiao".getBytes());
 		recordManager.insert("panmiaomiaomiao".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
@@ -30,17 +29,13 @@ public class RecordManagerTest1 extends TestCase {
 		assertEquals(new String(recordManager.fetch(RowNum16)),"aaaaa" );
 		assertEquals(new String(recordManager.fetch(RowNum15)),"panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf");
 		recordManager.releaseClose();
-		
-		
-		
-		
-		
+		recordManager.getFilepageManager().commit();
 	}
 	
+	/*
 
 	public  void testDisplayAllRow() throws Exception{
-		String filename = "storeFile4";
-	    RecordManager recordManager = new RecordManager(filename);
+	    RecordManager recordManager = new RecordManager();
 		recordManager.insert("sunbiaobiao".getBytes());
 		recordManager.insert("panmiaomiaomiao".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
@@ -71,8 +66,7 @@ public class RecordManagerTest1 extends TestCase {
 	}
 	
 	public  void  testUpdate() throws Exception{
-		String filename = "storeFile5";
-	    RecordManager recordManager = new RecordManager(filename);
+	    RecordManager recordManager = new RecordManager();
 		recordManager.insert("sunbiaobiao".getBytes());
 		recordManager.insert("panmiaomiaomiao".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
@@ -101,4 +95,5 @@ public class RecordManagerTest1 extends TestCase {
 		recordManager.displayAllRow();	
 	}
 
+    */
 }

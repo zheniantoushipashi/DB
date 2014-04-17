@@ -28,7 +28,7 @@ import java.util.TreeSet;
 
 /**
  * This class manages the transaction log that belongs to every
- * {@link PageFile}. The transaction log is either clean, or
+ * {@link PageManager}. The transaction log is either clean, or
  * in progress. In the latter case, the transaction manager
  * takes care of a roll forward.
  */
@@ -36,7 +36,7 @@ import java.util.TreeSet;
 // should start with lg9 instead of lg0!
 
 final class PageTransactionManager {
-    private PageFile owner;
+    private PageManager owner;
 
     // streams for transaction log.
     private DataOutputStream oos;
@@ -64,7 +64,7 @@ final class PageTransactionManager {
      * @param cipherIn
      * @param cipherOut
      */
-    PageTransactionManager(PageFile owner, Storage storage, Cipher cipherIn, Cipher cipherOut) throws IOException {
+    PageTransactionManager(PageManager owner, Storage storage, Cipher cipherIn, Cipher cipherOut) throws IOException {
         this.owner = owner;
         this.storage = storage;
         this.cipherIn = cipherIn;

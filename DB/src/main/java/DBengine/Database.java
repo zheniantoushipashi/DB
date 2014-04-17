@@ -17,7 +17,7 @@ public class Database {
 	public Serializer  serializer;
 	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
 	public   Database(String  filename) throws Exception{
-		this.recordManager = new  RecordManager(filename);
+		this.recordManager = new  RecordManager();
 		this.serializer = new  Serialization(registered);
 	}
 	

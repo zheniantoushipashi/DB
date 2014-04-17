@@ -1,81 +1,297 @@
 package Store;
 
 import java.io.IOException;
-
-public class PageManager {
-	int PAGE_SIZE_SHIFT = 12;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Iterator;
+import javax.crypto.Cipher;
+public final class PageManager {
+	final PageTransactionManager txnMgr;
 	/**
-	 * the lenght of single page.
-	 * <p>
-	 * !!! DO NOT MODIFY THI DIRECTLY !!!
-	 */
-	int PAGE_SIZE = 1 << PAGE_SIZE_SHIFT;
-	/*
-	 * 在一个页面中指向空闲的空间开始的位置
-	 */
-
-	public final int bytesOfInt = 1 << 2;
-	public final int FreeSpaceBeginPointer = (PAGE_SIZE - bytesOfInt);
-	/*
-	 * 空闲记录块的开始位置
-	 */
-
-	public final int freeIndexPointer = (PAGE_SIZE - 2 * bytesOfInt);
-	
-	/*
+	 * Pages currently locked for read/update ops. When released the page goes
+	 * to the dirty or clean list, depending on a flag. The file header page is
+	 * normally locked plus the page that is currently being read or modified.
 	 * 
-	 * 初始分配的页面大小
+	 * @see PageIo#isDirty()
 	 */
-	static final int INITIALIZE_AVAILABLE_SIZE = 4096;
-	/*
-	 * 
-	 * 未分配的页面号的记录位置
+	public final LongHashMap<PageBuffer> inUse = new LongHashMap<PageBuffer>();
+
+	/**
+	 * Pages whose state is dirty.
 	 */
-	static final int EMPTY_PAGE_BEGINPOINTER = 0;
-	static final  int  EMPTY_PAGE_BEGINPOSItION = 8;
-	static  final  int FIRST_SEARCH_PAGE_NUM = 8;
-	final PageFile file;
-	private PageBuffer PageManagerPage;
+	private final LongHashMap<PageBuffer> dirty = new LongHashMap<PageBuffer>();
+	/**
+	 * Pages in a <em>historical</em> transaction(s) that have been written onto
+	 * the log but which have not yet been committed to the database.
+	 */
+	private final LongHashMap<PageBuffer> inTxn = new LongHashMap<PageBuffer>();
 
-	PageManager(PageFile file) throws IOException {
-		this.file = file;
-		PageManagerPage = file.get(0);
-		setEmptyPageBeginPointer(EMPTY_PAGE_BEGINPOSItION);
-		PageManagerPage.ensureHeapBuffer();
-	}
+	// transactions disabled?
+	final boolean transactionsDisabled;
 
-	public int findEnoughSpacePage(int InsertRecordSize) throws IOException {
-		int i = FIRST_SEARCH_PAGE_NUM;
-		while ((i < (getEmptyPageBeginPointer()))
-				&& (InsertRecordSize + 8) > PageManagerPage.readInt(i)) {
-			int j = PageManagerPage.readInt(i);
-			i += 4;
+	/**
+	 * A array of clean data to wipe clean pages.
+	 */
+	static final byte[] CLEAN_DATA = new byte[Storage.PAGE_SIZE];
+	final Storage storage;
+	private Cipher cipherOut;
+	private Cipher cipherIn;
+
+	PageManager(String fileName, boolean readonly, boolean transactionsDisabled,
+			Cipher cipherIn, Cipher cipherOut, boolean useRandomAccessFile,
+			boolean lockingDisabled) throws IOException {
+		this.cipherIn = cipherIn;
+		this.cipherOut = cipherOut;
+		this.transactionsDisabled = transactionsDisabled;
+		this.storage = new StorageDisk(fileName, readonly, lockingDisabled);
+		if (!readonly && !transactionsDisabled) {
+			txnMgr = new PageTransactionManager(this, storage, cipherIn,
+					cipherOut);
+		} else {
+			txnMgr = null;
 		}
-		return i < getEmptyPageBeginPointer() ? (i / 4) : allocateNewPage();
 	}
 
-	int getEmptyPageBeginPointer() {
-		return this.PageManagerPage.readInt(EMPTY_PAGE_BEGINPOINTER);
+	public PageManager(String filename) throws IOException {
+		this(filename, false, false, null, null, false, false);
 	}
 
-	void setEmptyPageBeginPointer(int Position) {
-		this.PageManagerPage.writeInt(EMPTY_PAGE_BEGINPOINTER, Position);
+	// get a page from a file
+	public PageBuffer get(long pageId) throws IOException {
+		PageBuffer node = inTxn.get(pageId);
+		if (node != null) {
+			inTxn.remove(pageId);
+			inUse.put(pageId, node);
+			return node;
+		}
+		node = dirty.get(pageId);
+		if (node != null) {
+			dirty.remove(pageId);
+			inUse.put(pageId, node);
+			return node;
+		}
+		if (inUse.get(pageId) != null) {
+			throw new Error("同一个页面get两次 " + pageId);
+		}
+
+		// read node from file
+		if (cipherOut == null) {
+			node = new PageBuffer(pageId, storage.read(pageId));
+		}
+
+		inUse.put(pageId, node);
+		node.setClean();
+		return node;
+
 	}
 
-	void setPageSize(int Position, int PageSize){
-		this.PageManagerPage.writeInt(Position, PageSize);
+	/**
+	 * Releases a page.
+	 * 
+	 * @param pageId
+	 *            The record number to release.
+	 * @param isDirty
+	 *            If true, the page was modified since the get().
+	 */
+	public void release(final long pageId, final boolean isDirty)
+			throws IOException {
+
+		final PageBuffer page = inUse.remove(pageId);
+		if (!page.isDirty() && isDirty)
+			page.setDirty();
+
+		if (page.isDirty()) {
+			dirty.put(pageId, page);
+		} else if (!transactionsDisabled && page.isInTransaction()) {
+			inTxn.put(pageId, page);
+		}
 	}
-	int allocateNewPage() throws IOException {
-		PageManagerPage.writeInt(getEmptyPageBeginPointer(),
-				INITIALIZE_AVAILABLE_SIZE);
-		setEmptyPageBeginPointer(getEmptyPageBeginPointer() + 4);
-		PageBuffer  pgB = file.get((getEmptyPageBeginPointer() / 4) - 1);
-		pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
-		pgB.writeInt(FreeSpaceBeginPointer, 0);
-		return ( (getEmptyPageBeginPointer() / 4) - 1 );
+
+	/**
+	 * Releases a page.
+	 * 
+	 * @param page
+	 *            The page to release.
+	 */
+	public void release(final PageBuffer page) throws IOException {
+		final long key = page.getPageId();
+		inUse.remove(key);
+		if (page.isDirty()) {
+			// System.out.println( "Dirty: " + key + page );
+			dirty.put(key, page);
+		} else if (!transactionsDisabled && page.isInTransaction()) {
+			inTxn.put(key, page);
+		}
 	}
-	public  int  getAvailableSizeByPageNum (int PageNum){
-		return  PageManagerPage.readInt(PageNum * 4);
+
+	void freePage(final long pageId, final boolean isDirty) throws IOException {
+		final PageBuffer page = inUse.remove(pageId);
+		if (!page.isDirty() && isDirty)
+			page.setDirty();
+
+		if (page.isDirty()) {
+			dirty.put(pageId, page);
+		}
+
+	}
+
+	void discard(PageBuffer page) {
+		long key = page.getPageId();
+		inUse.remove(key);
+	}
+
+	/**
+	 * Commits the current transaction by flushing all dirty buffers to disk.
+	 */
+	public void commit() throws IOException {
+
+		// sort pages by IDs
+		long[] pageIds = new long[dirty.size()];
+		int c = 0;
+		for (Iterator<PageBuffer> i = dirty.valuesIterator(); i.hasNext();) {
+			pageIds[c] = i.next().getPageId();
+			c++;
+		}
+		Arrays.sort(pageIds);
+
+		for (long pageId : pageIds) {
+			PageBuffer node = dirty.get(pageId);
+
+			// System.out.println("node " + node + " map size now " +
+			// dirty.size());
+			if (transactionsDisabled) {
+				if (cipherIn != null)
+					storage.write(
+							node.getPageId(),
+							ByteBuffer.wrap(Utils.encrypt(cipherIn,
+									node.getData())));
+				else
+					storage.write(node.getPageId(), node.getData());
+				node.setClean();
+			} else {
+				txnMgr.add(node);
+				inTxn.put(node.getPageId(), node);
+			}
+		}
+		dirty.clear();
+		if (!transactionsDisabled) {
+			txnMgr.commit();
+		}
+	}
+
+	/**
+	 * Rollback the current transaction by discarding all dirty buffers
+	 */
+	void rollback() throws IOException {
+		// debugging...
+		if (!inUse.isEmpty()) {
+			showList(inUse.valuesIterator());
+			throw new Error("in use list not empty at rollback time ("
+					+ inUse.size() + ")");
+		}
+		// System.out.println("rollback...");
+		dirty.clear();
+
+		txnMgr.synchronizeLogFromDisk();
+
+		if (!inTxn.isEmpty()) {
+			showList(inTxn.valuesIterator());
+			throw new Error("in txn list not empty at rollback time ("
+					+ inTxn.size() + ")");
+		}
+		;
+	}
+
+	/**
+	 * Commits and closes file.
+	 */
+	public void close() throws IOException {
+		if (!dirty.isEmpty()) {
+			commit();
+		}
+
+		if (!transactionsDisabled && txnMgr != null) {
+			txnMgr.shutdown();
+		}
+
+		if (!inTxn.isEmpty()) {
+			showList(inTxn.valuesIterator());
+			throw new Error("In transaction not empty");
+		}
+
+		// these actually ain't that bad in a production release
+		if (!dirty.isEmpty()) {
+			System.out.println("ERROR: dirty pages at close time");
+			showList(dirty.valuesIterator());
+			throw new Error("Dirty pages at close time");
+		}
+		if (!inUse.isEmpty()) {
+			System.out.println("ERROR: inUse pages at close time");
+			showList(inUse.valuesIterator());
+			throw new Error("inUse pages  at close time");
+		}
+
+		storage.sync();
+		storage.forceClose();
+	}
+
+	/**
+	 * Force closing the file and underlying transaction manager. Used for
+	 * testing purposed only.
+	 */
+	void forceClose() throws IOException {
+		if (!transactionsDisabled) {
+			txnMgr.forceClose();
+		}
+		storage.forceClose();
+	}
+
+	/**
+	 * Prints contents of a list
+	 */
+	private void showList(Iterator<PageBuffer> i) {
+		int cnt = 0;
+		while (i.hasNext()) {
+			System.out.println("elem " + cnt + ": " + i.next());
+			cnt++;
+		}
+	}
+
+	/**
+	 * Synchs a node to disk. This is called by the transaction manager's
+	 * synchronization code.
+	 */
+	void synch(PageBuffer node) throws IOException {
+		ByteBuffer data = node.getData();
+		if (data != null) {
+			if (cipherIn != null)
+				storage.write(node.getPageId(),
+						ByteBuffer.wrap(Utils.encrypt(cipherIn, data)));
+			else
+				storage.write(node.getPageId(), data);
+		}
+	}
+
+	/**
+	 * Releases a node from the transaction list, if it was sitting there.
+	 */
+	void releaseFromTransaction(PageBuffer node) throws IOException {
+		inTxn.remove(node.getPageId());
+	}
+
+	/**
+	 * Synchronizes the file.
+	 */
+	void sync() throws IOException {
+		storage.sync();
+	}
+
+	public int getDirtyPageCount() {
+		return dirty.size();
+	}
+
+	public void deleteAllFiles() throws IOException {
+		storage.deleteAllFiles();
 	}
 
 }

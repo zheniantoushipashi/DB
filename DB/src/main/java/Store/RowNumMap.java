@@ -3,7 +3,7 @@ package Store;
 import java.io.IOException;
 
 public class RowNumMap {
-	final PageFile file;
+	final PageManager file;
 	private PageBuffer RowNumMapPage;
 	/*
 	 * 
@@ -14,7 +14,7 @@ public class RowNumMap {
     private  final  int PageOffset = 4;
     private  final  int RecordOffset = 6;
 	static  final  int MAP_SIZE = 8;
-	RowNumMap(PageFile file) throws Exception {
+	RowNumMap(PageManager file) throws Exception {
 		this.file = file;
 		RowNumMapPage = file.get(1);
 		RowNumMapPage.ensureHeapBuffer();
