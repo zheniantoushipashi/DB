@@ -69,7 +69,16 @@ public class PageSize {
 		PageManagerPage.writeInt(getEmptyPageBeginPointer(),
 				INITIALIZE_AVAILABLE_SIZE);
 		setEmptyPageBeginPointer(getEmptyPageBeginPointer() + 4);
+		PageBuffer  pgB = filepageManager.get((getEmptyPageBeginPointer() / 4) - 1);
+		writeHeader(pgB);
+		filepageManager.release(pgB);
 		return ( (getEmptyPageBeginPointer() / 4) - 1 );
+	}
+	
+	
+	void writeHeader(PageBuffer pgB) {
+		pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
+		pgB.writeInt(FreeSpaceBeginPointer, 0);
 	}
 	public  int  getAvailableSizeByPageNum (int PageNum){
 		return  PageManagerPage.readInt(PageNum * 4);

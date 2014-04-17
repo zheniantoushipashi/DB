@@ -46,8 +46,8 @@ public class RecordManager {
 		this.rowNumMap = rowNumMap;
 	}
 
-    PageManager filepageManager;
-	
+	PageManager filepageManager;
+
 	public PageManager getFilepageManager() {
 		return filepageManager;
 	}
@@ -57,22 +57,21 @@ public class RecordManager {
 	}
 
 	readProperty readPro = new readProperty();
+
 	public RecordManager() throws Exception {
 		this.filepageManager = new PageManager(readPro.getDbFilename());
 		pageSize = new PageSize(filepageManager);
 		rowNumMap = new RowNumMap(filepageManager);
 	}
+
 	/*
 	 * 
 	 * 
 	 * 插入一条记录
 	 */
-	public int insert(final byte[] data) throws Exception {		
-		int EnoughSpacePageId = pageSize.findEnoughSpacePage(data.length);		
-	//	PageBuffer pgB = (filepageManager.inUse.get(EnoughSpacePageId) == null) ? filepageManager
-	//			.get(EnoughSpacePageId) : filepageManager.inUse.get(EnoughSpacePageId);
-		PageBuffer  pgB = filepageManager.get(EnoughSpacePageId);
-		writeHeader(pgB);
+	public int insert(final byte[] data) throws Exception {
+		int EnoughSpacePageId = pageSize.findEnoughSpacePage(data.length);
+		PageBuffer pgB = filepageManager.get(EnoughSpacePageId);
 		fillRecord(pgB, data);
 		int InsertRowNum = rowNumMap.RegisterMapWhenInsert(EnoughSpacePageId,
 				findFreeIndex(pgB));
@@ -81,20 +80,19 @@ public class RecordManager {
 		return InsertRowNum;
 	}
 
-	void  writeHeader(PageBuffer  pgB){
-		pgB.writeInt(freeIndexPointer, PAGE_SIZE - 2 * bytesOfInt);
-		pgB.writeInt(FreeSpaceBeginPointer, 0);
-	}
-    void  fillRecord(PageBuffer pgB , byte[]  data){
-    	pgB.writeByteArray(data, 0, this.findFreePosition(pgB), data.length);
+	
+
+	void fillRecord(PageBuffer pgB, byte[] data) {
+		pgB.writeByteArray(data, 0, this.findFreePosition(pgB), data.length);
 		pgB.writeInt(this.findFreeIndex(pgB) - offsetSizeIndex,
 				this.findFreePosition(pgB));
 		pgB.writeInt(this.findFreeIndex(pgB) - offsetSizeIndex / 2, data.length);
 		pgB.writeInt(FreeSpaceBeginPointer, this.findFreePosition(pgB)
 				+ data.length);
 		pgB.writeInt(freeIndexPointer, this.findFreeIndex(pgB)
-				- offsetSizeIndex);	
-    }
+				- offsetSizeIndex);
+	}
+
 	public void releaseClose() throws IOException {
 		Iterator<PageBuffer> iter = filepageManager.inUse.valuesIterator();
 		while (iter.hasNext()) {
@@ -129,23 +127,25 @@ public class RecordManager {
 	public void update(int RowNum, byte[] bytes) throws Exception {
 		int currentPageNum = rowNumMap.FindPageIdByRowNum(RowNum);
 		int currentRecordNum = rowNumMap.FindRecordIdByRowNum(RowNum);
-		PageBuffer pgB = (filepageManager.inUse.get(currentPageNum) == null) ? filepageManager.get(currentPageNum)
-				: filepageManager.inUse.get(currentPageNum);
+		PageBuffer pgB = (filepageManager.inUse.get(currentPageNum) == null) ? filepageManager
+				.get(currentPageNum) : filepageManager.inUse
+				.get(currentPageNum);
 		int offset = pgB.readInt(currentRecordNum);
 		int length = pgB.readInt(currentRecordNum + 4);
-        if(bytes.length > length){
-        	int EnoughSpacePageId = pageSize.findEnoughSpacePage(bytes.length);
-        	PageBuffer pgBtmp = (filepageManager.inUse.get(EnoughSpacePageId) == null) ? filepageManager
-    				.get(EnoughSpacePageId) : filepageManager.inUse.get(EnoughSpacePageId);
-    		fillRecord(pgBtmp, bytes);
-    		rowNumMap.modifyMapPageNum(RowNum, EnoughSpacePageId);
-    		rowNumMap.modifyMapRecordNum(RowNum, findFreeIndex(pgBtmp));
-    		pageSize.setPageSize(EnoughSpacePageId * 4, getAvailableSize(pgBtmp));
-        }
-        else{
-        	pgB.writeByteArray(bytes, 0, offset, bytes.length);
-        	pgB.writeInt(currentRecordNum + 4, bytes.length);
-        }
+		if (bytes.length > length) {
+			int EnoughSpacePageId = pageSize.findEnoughSpacePage(bytes.length);
+			PageBuffer pgBtmp = (filepageManager.inUse.get(EnoughSpacePageId) == null) ? filepageManager
+					.get(EnoughSpacePageId) : filepageManager.inUse
+					.get(EnoughSpacePageId);
+			fillRecord(pgBtmp, bytes);
+			rowNumMap.modifyMapPageNum(RowNum, EnoughSpacePageId);
+			rowNumMap.modifyMapRecordNum(RowNum, findFreeIndex(pgBtmp));
+			pageSize.setPageSize(EnoughSpacePageId * 4,
+					getAvailableSize(pgBtmp));
+		} else {
+			pgB.writeByteArray(bytes, 0, offset, bytes.length);
+			pgB.writeInt(currentRecordNum + 4, bytes.length);
+		}
 	}
 
 	/*
@@ -179,16 +179,15 @@ public class RecordManager {
 	}
 
 	public byte[] getRecordById(int pageId, int RecordId) throws IOException {
-		//PageBuffer pgB = (filepageManager.inUse.get(pageId) == null) ? filepageManager.get(pageId)
-		//		: filepageManager.inUse.get(pageId);
-		PageBuffer  pgB = filepageManager.get(pageId);
+	//	 PageBuffer pgB = (filepageManager.inUse.get(pageId) == null) ? filepageManager.get(pageId) : filepageManager.inUse.get(pageId);
+		PageBuffer pgB = filepageManager.get(pageId);
 		int offset = pgB.readInt(RecordId);
 		int length = pgB.readInt(RecordId + 4);
-		
-		byte[] data = pgB.readByteArray(new byte[length], 0, offset, length);
+
+	    byte[] data = pgB.readByteArray(new byte[length], 0, offset, length);
 		filepageManager.release(pageId, true);
-		return  data;
-		
+		return data;
+
 	}
 
 	public void displayAllRow() throws Exception {
