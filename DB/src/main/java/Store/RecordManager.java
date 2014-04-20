@@ -1,7 +1,10 @@
 package Store;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
+
+import javax.crypto.Cipher;
 
 import Util.readProperty;
 
@@ -30,7 +33,7 @@ public class RecordManager {
 	 */
 	public final int offsetSizeIndex = 2 * bytesOfInt;
 
-	private final PageSize pageSize;
+	private PageSize pageSize;
 
 	public PageSize getpageSize() {
 		return pageSize;
@@ -47,6 +50,23 @@ public class RecordManager {
 	}
 
 	PageManager filepageManager;
+	private final boolean readonly;
+	final boolean transactionsDisabled;
+
+    private final boolean deleteFilesAfterClose;
+	private final String _filename;
+
+	/**
+	 * cipher used for decryption, may be null
+	 */
+	private Cipher cipherOut;
+	/**
+	 * cipher used for encryption, may be null
+	 */
+	private Cipher cipherIn;
+
+	private boolean useRandomAccessFile;
+	private boolean lockingDisabled;
 
 	public PageManager getFilepageManager() {
 		return filepageManager;
@@ -56,14 +76,51 @@ public class RecordManager {
 		this.filepageManager = filepageManager;
 	}
 
-	readProperty readPro = new readProperty();
+	static readProperty readPro = new readProperty();
 
-	public RecordManager() throws Exception {
-		this.filepageManager = new PageManager(readPro.getDbFilename());
-		pageSize = new PageSize(filepageManager);
-		rowNumMap = new RowNumMap(filepageManager);
+    public  RecordManager() throws IOException, Exception{   	
+    	this(readPro.getDbFilename(), false, true, null, null, false, false,
+				false);	
+    }
+	
+	public RecordManager(String filename, boolean readonly,
+			boolean transactionDisabled, boolean lockingDisabled)
+			throws Exception {
+		this(filename, readonly, transactionDisabled, null, null, false, false,
+				false);
 	}
 
+	public RecordManager(String filename, boolean readonly,
+			boolean transactionDisabled, Cipher cipherIn, Cipher cipherOut,
+			boolean useRandomAccessFile, boolean deleteFilesAfterClose,
+			boolean lockingDisabled) throws Exception {
+		_filename = filename;
+		this.readonly = readonly;
+		this.transactionsDisabled = transactionDisabled;
+		this.cipherIn = cipherIn;
+		this.cipherOut = cipherOut;
+		this.useRandomAccessFile = useRandomAccessFile;
+		this.deleteFilesAfterClose = deleteFilesAfterClose;
+		this.lockingDisabled = lockingDisabled;
+		
+		reopen();
+	}
+
+	private void reopen() throws Exception {
+		filepageManager = new PageManager(readPro.getDbFilename(), readonly,
+				transactionsDisabled, cipherIn, cipherOut, useRandomAccessFile,
+				lockingDisabled);
+		pageSize = new PageSize(filepageManager);
+		rowNumMap = new RowNumMap(filepageManager);
+
+	}
+
+	public  void commitAll() throws IOException{
+		filepageManager.release(0, true);
+		filepageManager.release(1, true);
+		filepageManager.commit();
+	}
+	
 	/*
 	 * 
 	 * 
@@ -79,8 +136,6 @@ public class RecordManager {
 		filepageManager.release(EnoughSpacePageId, true);
 		return InsertRowNum;
 	}
-
-	
 
 	void fillRecord(PageBuffer pgB, byte[] data) {
 		pgB.writeByteArray(data, 0, this.findFreePosition(pgB), data.length);
@@ -179,12 +234,13 @@ public class RecordManager {
 	}
 
 	public byte[] getRecordById(int pageId, int RecordId) throws IOException {
-	//	 PageBuffer pgB = (filepageManager.inUse.get(pageId) == null) ? filepageManager.get(pageId) : filepageManager.inUse.get(pageId);
+		// PageBuffer pgB = (filepageManager.inUse.get(pageId) == null) ?
+		// filepageManager.get(pageId) : filepageManager.inUse.get(pageId);
 		PageBuffer pgB = filepageManager.get(pageId);
 		int offset = pgB.readInt(RecordId);
 		int length = pgB.readInt(RecordId + 4);
 
-	    byte[] data = pgB.readByteArray(new byte[length], 0, offset, length);
+		byte[] data = pgB.readByteArray(new byte[length], 0, offset, length);
 		filepageManager.release(pageId, true);
 		return data;
 

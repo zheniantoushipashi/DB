@@ -46,7 +46,8 @@ public class RowNumMap {
 	}
 	
     public int	FindPageIdByRowNum(int RowNum){
-        return  RowNumMapPage.readShort((RowNum - 1) * MAP_SIZE + MAPSTARTPOINT + PageOffset);
+    	int MapNum = RowNumMapPage.readShort((RowNum - 1) * MAP_SIZE + MAPSTARTPOINT + PageOffset);
+        return  MapNum;
     }
     
     public int	FindRecordIdByRowNum(int RowNum){

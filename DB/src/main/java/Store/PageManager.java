@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Iterator;
+
 import javax.crypto.Cipher;
 public final class PageManager {
 	final PageTransactionManager txnMgr;
@@ -123,7 +124,8 @@ public final class PageManager {
 			inTxn.put(key, page);
 		}
 	}
-
+	
+	
 	void freePage(final long pageId, final boolean isDirty) throws IOException {
 		final PageBuffer page = inUse.remove(pageId);
 		if (!page.isDirty() && isDirty)

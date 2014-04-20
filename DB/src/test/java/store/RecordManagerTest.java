@@ -6,12 +6,15 @@ public class RecordManagerTest extends TestCase {
 	   
 	public void testGetRecordById() throws Exception {
 		RecordManager recordManager = new RecordManager();
-		int rowOne = recordManager.insert("sunbiaobiao".getBytes());
-		assertEquals(new String(recordManager.fetch(rowOne)),"sunbiaobiao" );
 		
-		recordManager.insert("panmiaomiaomiao".getBytes());
-	  
-		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
+	//	int rowOne = recordManager.insert("sunbiaobiao".getBytes());
+		assertEquals(new String(recordManager.fetch(1)),"sunbiaobiao" );
+		
+		
+	 //   int  rowTwo = recordManager.insert("panmiaomiaomiao".getBytes());
+	    assertEquals(new String(recordManager.fetch(2)),"panmiaomiaomiao" );
+	    /*
+	    int rowThree = recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
 		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
@@ -26,20 +29,25 @@ public class RecordManagerTest extends TestCase {
 		int RowNum15 = recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
 		
 		int RowNum16 = recordManager.insert("aaaaa".getBytes());
-		assertEquals(new String(recordManager.fetch(RowNum16)),"aaaaa" );
+		
+		assertEquals(new String(recordManager.fetch(16)),"aaaaa" );
+		
 		int RowNum17 = recordManager.insert("you are a little dog".getBytes());
-		assertEquals(new String(recordManager.fetch(RowNum17)),"you are a little dog" );
-		assertEquals(new String(recordManager.fetch(RowNum15)),"panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf");
-	/*
-		recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
-		int RowNum19 = recordManager.insert("19panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
+		*/
+		assertEquals(new String(recordManager.fetch(17)),"you are a little dog" );
+		assertEquals(new String(recordManager.fetch(15)),"panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf");
+	
+		//recordManager.insert("panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
+		//int RowNum19 = recordManager.insert("19panmiaomiaomiaodjflasjfdsakdfl;dsjfljslfkjslflm kajflkjslfjowjifojflskdlfjslfjljalvljaljfdlsjaflsjfldsjlfjdslfjsdfjsldjflsdjflsajfdljdflajfljsdlfjslafjlsdjflsajflsdfsjadfljsaljdflsajflasjflsadjljaf".getBytes());
 		
 		
 	
-	*/
+	
 		
-		//recordManager.releaseClose();
-		//recordManager.getFilepageManager().commit();
+		
+		//recordManager.commitAll();
+		
+		
 	}
 	
 	/*
