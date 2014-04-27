@@ -1,12 +1,5 @@
 package BtreeIndex;
-/***
- * 
- * @author hgrimberg
- * 
- * Class that simulates a disk. A disk contains a page table of a given 
- * capacity and page size.
- * 
- */
+
 public class Disk {
 	
 	/**
