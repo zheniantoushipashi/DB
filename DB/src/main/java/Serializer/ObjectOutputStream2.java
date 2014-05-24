@@ -14,11 +14,11 @@ public class ObjectOutputStream2 extends DataOutputStream implements ObjectOutpu
 
     public void writeObject(Object obj) throws IOException {
         ArrayList registered = new ArrayList();
-        Serialization ser = new Serialization();
+        SerializeAll ser = new SerializeAll();
 
         byte[] data = ser.serialize(obj);
         //write class info first
-        SerialClassInfo1.serializer.serialize(this, registered);
+        SerializeClass.serializer.serialize(this, registered);
         //and write data
         write(data);
     }

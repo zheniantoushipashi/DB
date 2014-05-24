@@ -445,7 +445,7 @@ class HTree<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
         }
     }
 
-    public static HTree deserialize(DataInput is, Serialization ser) throws IOException, ClassNotFoundException {
+    public static HTree deserialize(DataInput is, SerializeAll ser) throws IOException, ClassNotFoundException {
         long rootRecid = LongPacker.unpackLong(is);
         boolean hasValues = is.readBoolean();
         Serializer keySerializer = (Serializer) ser.deserialize(is);

@@ -189,7 +189,7 @@ class LinkedList2<E> extends AbstractSequentialList<E> {
     /**
      * called from Serialization object
      */
-    static LinkedList2 deserialize(DataInput is, Serialization ser) throws IOException, ClassNotFoundException {
+    static LinkedList2 deserialize(DataInput is, SerializeAll ser) throws IOException, ClassNotFoundException {
         long rootrecid = LongPacker.unpackLong(is);
         long sizeLimit = LongPacker.unpackLong(is);
         if(sizeLimit!=0) throw new InternalError("LinkedList.sizeLimit not supported in this JDBM version");

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 import DataStructure.BTree1;
 import Serializer.DataInputOutput;
-import Serializer.ObjectClassInfo;
-import Serializer.SerialClassInfo1;
-import Serializer.Serialization;
+import Serializer.ClassMeta;
+import Serializer.SerializeClass;
+import Serializer.SerializeAll;
 import Serializer.Serializer;
 import junit.framework.TestCase;
 
@@ -106,7 +106,7 @@ public class DatabaseTest extends TestCase {
 		}
 	}
   
-	Serialization s;
+	SerializeAll s;
 	
 
 	public void testInsert() throws Exception {
@@ -120,7 +120,6 @@ public class DatabaseTest extends TestCase {
 		@SuppressWarnings("unchecked")
 		Bean1 b2 = (Bean1) database.fetch(recid, database.serializer, outbuf);
 		assertEquals(b1 , b2);
-		
 	}
 
 }

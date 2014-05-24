@@ -23,32 +23,15 @@ import java.util.*;
 
 import Serializer.SerializationHeader;
 
-/**
- * Serialization util. It reduces serialized data size for most common java types.
- * <p/>
- * Common pattern is one byte header which identifies data type, then size is written (if required) and
- * data.
- * <p/>
- * On unknown types normal java serialization is used
- * <p/>
- * <p/>
- * Header byte values bellow 180 are reserved by author for future use. If you want to customize
- * this class, use values over 180, to be compatible with future updates.
- *
- * @author Jan Kotek
- */
 @SuppressWarnings("unchecked")
-public class Serialization extends SerialClassInfo1 implements Serializer {
-
-
-
-
-	public Serialization(ArrayList<ObjectClassInfo> registered ,String filename) throws Exception {
+public class SerializeAll extends SerializeClass implements Serializer {
+	
+	public SerializeAll(ArrayList<ClassMeta> registered ,String filename) throws Exception {
 		super(registered, filename);
 		// TODO Auto-generated constructor stub
 	}
 
-	public Serialization(ArrayList<ObjectClassInfo> registered) throws  Exception{
+	public SerializeAll(ArrayList<ClassMeta> registered) throws  Exception{
 		super(registered);
 		// TODO Auto-generated constructor stub
 	}

@@ -1105,7 +1105,7 @@ final class BTreeNode<K, V>
             for (int i = firstUse; i < BTree.DEFAULT_SIZE; i++) {
                 byte[] b = leadingValuePackRead(ois, previous, 0);
                 if (b == null) continue;
-                ret[i] = new String(b,Serialization.UTF8);
+                ret[i] = new String(b,SerializeAll.UTF8);
                 previous = b;
             }
             return (K[]) ret;
@@ -1251,7 +1251,7 @@ final class BTreeNode<K, V>
                         if (keys[i] == null) {
                             leadingValuePackWrite(oos, null, previous, 0);
                         } else {
-                            byte[] b = ((String) keys[i]).getBytes(Serialization.UTF8);
+                            byte[] b = ((String) keys[i]).getBytes(SerializeAll.UTF8);
                             leadingValuePackWrite(oos, b, previous, 0);
                             previous = b;
                         }

@@ -19,12 +19,7 @@ package Serializer;
 
 import java.io.*;
 
-/**
- * Interface used to provide a serialization mechanism other than a class' normal
- * serialization.
- *
- * @author Alex Boisvert
- */
+
 public interface Serializer<A> {
 
     /**

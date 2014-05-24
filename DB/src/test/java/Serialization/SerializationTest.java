@@ -3,18 +3,18 @@ package Serialization;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import Serializer.ObjectClassInfo;
-import Serializer.Serialization;
+import Serializer.ClassMeta;
+import Serializer.SerializeAll;
 import junit.framework.TestCase;
 
 public class SerializationTest extends TestCase {
-	Serialization ser;
+	SerializeAll ser;
 	
-	ArrayList<ObjectClassInfo> registered;
+	ArrayList<ClassMeta> registered;
 
 	public SerializationTest() throws Exception {
 		String  filename = "storeFile1";
-		ser = new Serialization(registered, filename);
+		ser = new SerializeAll(registered, filename);
 	}
 
 	public void testInt() throws IOException, ClassNotFoundException {

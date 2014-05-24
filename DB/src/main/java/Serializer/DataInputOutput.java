@@ -143,7 +143,7 @@ import java.util.Arrays;
     }
 
     public String readUTF() throws IOException {
-        return Serialization.deserializeString(this);
+        return SerializeAll.deserializeString(this);
     }
 
     /**
@@ -234,7 +234,7 @@ import java.util.Arrays;
     }
 
     public void writeUTF(String s) throws IOException {
-        Serialization.serializeString(this, s);
+        SerializeAll.serializeString(this, s);
     }
 
     /** helper method to write data directly from PageIo*/
@@ -247,9 +247,9 @@ import java.util.Arrays;
 
 
     //temp var used for Externalizable
-    SerialClassInfo1 serializer;
+    SerializeClass serializer;
     //temp var used for Externalizable
-    Serialization.FastArrayList objectStack;
+    SerializeAll.FastArrayList objectStack;
 
     public Object readObject() throws ClassNotFoundException, IOException {
         //is here just to implement ObjectInput

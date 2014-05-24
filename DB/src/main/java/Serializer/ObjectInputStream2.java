@@ -17,9 +17,9 @@ public class ObjectInputStream2 extends DataInputStream implements ObjectInput {
 
     public Object readObject() throws ClassNotFoundException, IOException {
         //first read class data
-        ArrayList<ObjectClassInfo> info = SerialClassInfo1.serializer.deserialize(this);
+        ArrayList<ClassMeta> info = SerializeClass.serializer.deserialize(this);
 
-        Serialization ser = new Serialization();
+        SerializeAll ser = new SerializeAll();
         return ser.deserialize(this);
     }
 }

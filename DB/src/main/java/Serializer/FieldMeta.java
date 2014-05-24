@@ -4,7 +4,7 @@ import java.io.ObjectStreamField;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class FieldInfo {
+public class FieldMeta {
      private  final  String name;
      private  final  boolean  primitive;
      private  final  String type;
@@ -14,7 +14,7 @@ public class FieldInfo {
      private  int  setterIndex;
      public  Object  getter;
      private  int  getterIndex;
-     public  FieldInfo(String name, boolean  primitive, String type, Class clazz){
+     public  FieldMeta(String name, boolean  primitive, String type, Class clazz){
     	 this.name = name;
     	 this.primitive = primitive;
     	 this.type = type;
@@ -116,7 +116,7 @@ public class FieldInfo {
      public String getType() {
          return type;
      }
-     public  FieldInfo(ObjectStreamField sf, Class clazz){
+     public  FieldMeta(ObjectStreamField sf, Class clazz){
     	 this(sf.getName(), sf.isPrimitive(), sf.getType().getName(),clazz);
      }
 

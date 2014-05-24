@@ -504,7 +504,7 @@ class BTree<K, V> {
     }
 
 
-    static BTree readExternal(DataInput in, Serialization ser)
+    static BTree readExternal(DataInput in, SerializeAll ser)
             throws IOException, ClassNotFoundException {
         BTree tree = new BTree();
         tree._db = ser.db;

@@ -9,9 +9,9 @@ import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 
-import Serializer.ObjectClassInfo;
-import Serializer.SerialClassInfo1;
-import Serializer.Serialization;
+import Serializer.ClassMeta;
+import Serializer.SerializeClass;
+import Serializer.SerializeAll;
 import junit.framework.TestCase;
 
 public class SerialiClassInfoTest extends TestCase {
@@ -109,38 +109,38 @@ public class SerialiClassInfoTest extends TestCase {
 		}
 	}
 
-	SerialClassInfo1 s;
-	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
+	SerializeClass s;
+	ArrayList<ClassMeta> registered = new ArrayList<ClassMeta>();
 
 	Bean1 b = new Bean1("aa", "bb");
 	Bean2 b2 = new Bean2("aa", "bb", "cc");
 
 	public void testGetFieldValue1() throws Exception {
 		String filename = "storeFile1"; 
-		s = new Serialization(registered);
+		s = new SerializeAll(registered);
 		assertEquals("aa", s.getFieldValue("field1", b));
 
 	}
 
 	public void testGetFieldValue2() throws Exception {
-		s = new Serialization(registered);
+		s = new SerializeAll(registered);
 		assertEquals("bb", s.getFieldValue("field2", b));
 		assertEquals(1, b.getCalled);
 	}
 
 	public void testGetFieldValue3() throws Exception {
-		s = new Serialization(registered);
+		s = new SerializeAll(registered);
 		assertEquals("aa", s.getFieldValue("field1", b2));
 	}
 
 	public void testGetFieldValue4() throws Exception {
-		s = new Serialization(registered);
+		s = new SerializeAll(registered);
 		assertEquals("bb", s.getFieldValue("field2", b2));
 		assertEquals(1, b2.getCalled);
 	}
 
 	public void testGetFieldValue5() throws Exception {
-		s = new Serialization(registered);
+		s = new SerializeAll(registered);
 		assertEquals("cc", s.getFieldValue("field3", b2));
 	}
 

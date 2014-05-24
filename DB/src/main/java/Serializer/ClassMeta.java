@@ -5,20 +5,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-public class ObjectClassInfo {
+public class ClassMeta {
 	private final String name;
-	public final List<FieldInfo> fields = new ArrayList<FieldInfo>();
-	private final Map<String, FieldInfo> nameToFieldInfo = new HashMap<String, FieldInfo>();
+	public final List<FieldMeta> fields = new ArrayList<FieldMeta>();
+	private final Map<String, FieldMeta> nameToFieldInfo = new HashMap<String, FieldMeta>();
 	private final Map<String, Integer> nameToFieldId = new HashMap<String, Integer>();
 	final boolean isEnum;
 	final boolean isExternalizable;
 	private ObjectStreamField[] objectStreamFields;
-	ObjectClassInfo(final String name, final FieldInfo[] fields,
+	ClassMeta(final String name, final FieldMeta[] fields,
 			final boolean isEnum, final boolean isExternalizable) {
 		this.name = name;
 		this.isEnum = isEnum;
 		this.isExternalizable = isExternalizable;
-		for (FieldInfo f : fields) {
+		for (FieldMeta f : fields) {
 			this.nameToFieldId.put(f.getName(), this.fields.size());
 			this.fields.add(f);
 			this.nameToFieldInfo.put(f.getName(), f);
@@ -31,11 +31,11 @@ public class ObjectClassInfo {
 		return name;
 	}
 
-	public FieldInfo[] getFields() {
-		return (FieldInfo[]) fields.toArray();
+	public FieldMeta[] getFields() {
+		return (FieldMeta[]) fields.toArray();
 	}
 
-	public FieldInfo getField(String name) {
+	public FieldMeta getField(String name) {
 		return nameToFieldInfo.get(name);
 	}
 
@@ -47,10 +47,10 @@ public class ObjectClassInfo {
 		return -1;
 	}
 
-	public FieldInfo getField(int serialId) {
+	public FieldMeta getField(int serialId) {
 		return fields.get(serialId);
 	}
-  public ObjectStreamField[] getObjectStreamFields() {
+    public ObjectStreamField[] getObjectStreamFields() {
 		return objectStreamFields;
 	}
 
@@ -58,7 +58,7 @@ public class ObjectClassInfo {
 		this.objectStreamFields = objectStreamFields;
 	}
 	
-	public  int  addFieldInfo(FieldInfo field){
+	public  int  addFieldInfo(FieldMeta field){
 		nameToFieldId.put(field.getName(), fields.size());
 		nameToFieldInfo.put(field.getName(), field);
 		fields.add(field);

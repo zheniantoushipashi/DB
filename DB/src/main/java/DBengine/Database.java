@@ -6,19 +6,19 @@ import java.util.ArrayList;
 
 import Serializer.DataInputOutput;
 import Serializer.LongPacker;
-import Serializer.ObjectClassInfo;
-import Serializer.SerialClassInfo1;
-import Serializer.Serialization;
+import Serializer.ClassMeta;
+import Serializer.SerializeClass;
+import Serializer.SerializeAll;
 import Serializer.Serializer;
 import Store.RecordManager;
 
 public class Database {
 	RecordManager recordManager ;
 	public Serializer  serializer;
-	ArrayList<ObjectClassInfo> registered = new ArrayList<ObjectClassInfo>();
+	ArrayList<ClassMeta> registered = new ArrayList<ClassMeta>();
 	public   Database(String  filename) throws Exception{
 		this.recordManager = new  RecordManager();
-		this.serializer = new  Serialization(registered);
+		this.serializer = new  SerializeAll(registered);
 	}
 	
 	 /** we need to set reference to this DB instance, so serializer needs to be here*/

@@ -17,16 +17,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import DBengine.Database;
-import Serializer.Serialization.FastArrayList;
+import Serializer.SerializeAll.FastArrayList;
 
-public abstract class SerialClassInfo1 {
+public abstract class SerializeClass {
 	Database  db ; 
-	public  SerialClassInfo1(ArrayList<ObjectClassInfo> registered) throws Exception{
+	public  SerializeClass(ArrayList<ClassMeta> registered) throws Exception{
 		this.registered = registered;
 	}
 	
-	public SerialClassInfo1(
-			ArrayList<ObjectClassInfo> registered, String  filename) throws Exception {
+	public SerializeClass(
+			ArrayList<ClassMeta> registered, String  filename) throws Exception {
 		this.registered = registered;
 		if(db == null){
 			db = new Database(filename);
@@ -36,18 +36,18 @@ public abstract class SerialClassInfo1 {
 
 	
 	
-	public static final Serializer<ArrayList<ObjectClassInfo>> serializer = new Serializer<ArrayList<ObjectClassInfo>>() {
-		public void serialize(DataOutput out, ArrayList<ObjectClassInfo> obj)
+	public static final Serializer<ArrayList<ClassMeta>> serializer = new Serializer<ArrayList<ClassMeta>>() {
+		public void serialize(DataOutput out, ArrayList<ClassMeta> obj)
 				throws IOException {
 			LongPacker.packInt(out, obj.size());
-			for (ObjectClassInfo oci : obj) {
+			for (ClassMeta oci : obj) {
 				out.writeUTF(oci.getName());
 				out.writeBoolean(oci.isEnum);
 				out.writeBoolean(oci.isExternalizable);
 				if (oci.isExternalizable)
 					continue; // no fields
 				LongPacker.packInt(out, oci.fields.size());
-				for (FieldInfo fi : oci.fields) {
+				for (FieldMeta fi : oci.fields) {
 					out.writeUTF(fi.getName());
 					out.writeBoolean(fi.isPrimitive());
 					out.writeUTF(fi.getType());
@@ -57,22 +57,22 @@ public abstract class SerialClassInfo1 {
 			}
 		}
 
-		public ArrayList<ObjectClassInfo> deserialize(DataInput in)
+		public ArrayList<ClassMeta> deserialize(DataInput in)
 				throws IOException, ClassNotFoundException {
 			int size = LongPacker.unpackInt(in);
-			ArrayList<ObjectClassInfo> ret = new ArrayList<ObjectClassInfo>(
+			ArrayList<ClassMeta> ret = new ArrayList<ClassMeta>(
 					size);
 			for (int i = 0; i < size; i++) {
 				String className = in.readUTF();
 				boolean isEnum = in.readBoolean();
 				boolean isExternalizable = in.readBoolean();
 				int fieldsNum = isExternalizable ? 0 : LongPacker.unpackInt(in);
-				FieldInfo[] fields = new FieldInfo[fieldsNum];
+				FieldMeta[] fields = new FieldMeta[fieldsNum];
 				for (int j = 0; j < fieldsNum; j++) {
-					fields[j] = new FieldInfo(in.readUTF(), in.readBoolean(),
+					fields[j] = new FieldMeta(in.readUTF(), in.readBoolean(),
 							in.readUTF(), Class.forName(className));
 				}
-				ret.add(new ObjectClassInfo(className, fields, isEnum,
+				ret.add(new ClassMeta(className, fields, isEnum,
 						isExternalizable));
 			}
 			return ret;
@@ -82,7 +82,7 @@ public abstract class SerialClassInfo1 {
 
 	private ObjectStreamField[] getFields(Class clazz) {
 		ObjectStreamField[] fields = null;
-		ObjectClassInfo classInfo = null;
+		ClassMeta classInfo = null;
 		Integer classId = classToclassId.get(clazz);
 		if (classId != null) {
 			classInfo = registered.get(classId);
@@ -108,7 +108,7 @@ public abstract class SerialClassInfo1 {
 		return fields;
 	}
 
-	ArrayList<ObjectClassInfo> registered;
+	ArrayList<ClassMeta> registered;
 	Map<Class, Integer> classToclassId = new HashMap<Class, Integer>();
 	Map<Integer, Class> classIdToclass = new HashMap<Integer, Class>();
 
@@ -120,12 +120,12 @@ public abstract class SerialClassInfo1 {
 			return;
 		}
 		ObjectStreamField[] streamFields = getFields(clazz);
-		FieldInfo[] fields = new FieldInfo[streamFields.length];
+		FieldMeta[] fields = new FieldMeta[streamFields.length];
 		for (int i = 0; i < fields.length; i++) {
 			ObjectStreamField sf = streamFields[i];
-			fields[i] = new FieldInfo(sf, clazz);
+			fields[i] = new FieldMeta(sf, clazz);
 		}
-		ObjectClassInfo i = new ObjectClassInfo(clazz.getName(), fields,
+		ClassMeta i = new ClassMeta(clazz.getName(), fields,
 				clazz.isEnum(), Externalizable.class.isAssignableFrom(clazz));
 		classToclassId.put(clazz, registered.size());
 		classIdToclass.put(registered.size(), clazz);
@@ -160,12 +160,12 @@ public abstract class SerialClassInfo1 {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ObjectClassInfo classInfo = registered.get(classToclassId.get(object
+		ClassMeta classInfo = registered.get(classToclassId.get(object
 				.getClass()));
 		return getFieldValue(classInfo.getField(fieldName), object);
 	}
 
-	public Object getFieldValue(FieldInfo fieldInfo, Object object) {
+	public Object getFieldValue(FieldMeta fieldInfo, Object object) {
 
 		Object fieldAccessor = fieldInfo.getter;
 		try {
@@ -190,12 +190,12 @@ public abstract class SerialClassInfo1 {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ObjectClassInfo classInfo = registered.get(classToclassId.get(object
+		ClassMeta classInfo = registered.get(classToclassId.get(object
 				.getClass()));
 		setFieldValue(classInfo.getField(fieldName), object, value);
 	}
 
-	public void setFieldValue(FieldInfo fieldInfo, Object object, Object value) {
+	public void setFieldValue(FieldMeta fieldInfo, Object object, Object value) {
 
 		Object fieldAccessor = fieldInfo.setter;
 		try {
@@ -222,7 +222,7 @@ public abstract class SerialClassInfo1 {
 		// write class header
 		int classId = getClassId(obj.getClass());
 		LongPacker.packInt(out, classId);
-		ObjectClassInfo classInfo = registered.get(classId);
+		ClassMeta classInfo = registered.get(classId);
 
 		if (classInfo.isExternalizable) {
 			Externalizable o = (Externalizable) obj;
@@ -271,7 +271,7 @@ public abstract class SerialClassInfo1 {
 		// read class header
 		try {
 			int classId = LongPacker.unpackInt(in);
-			ObjectClassInfo classInfo = registered.get(classId);
+			ClassMeta classInfo = registered.get(classId);
 			// Class clazz = Class.forName(classInfo.getName());
 			Class clazz = classIdToclass.get(classId);
 			if (clazz == null)
@@ -305,7 +305,7 @@ public abstract class SerialClassInfo1 {
 				int fieldCount = LongPacker.unpackInt(in);
 				for (int i = 0; i < fieldCount; i++) {
 					int fieldId = LongPacker.unpackInt(in);
-					FieldInfo f = classInfo.getField(fieldId);
+					FieldMeta f = classInfo.getField(fieldId);
 					Object fieldValue = deserialize(in, objectStack);
 					setFieldValue(f, o, fieldValue);
 				}

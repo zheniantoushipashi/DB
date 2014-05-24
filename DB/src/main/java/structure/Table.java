@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import metaObject.Dbobject;
+import metaObject.Dbobjectimpl;
+import DBengine.Database;
 import ValueType.Value;
-import DBengine.DbObject;
-public class Table extends DbObject implements Serializable {
+public class Table extends Dbobjectimpl implements Serializable {
 	
 	 /**
 	 * 
@@ -63,14 +65,15 @@ public class Table extends DbObject implements Serializable {
     private Column rowIdColumn;
     
     
-    public  Table(String name, ArrayList<Column> columns) {
-      this.objectName = name;
-      Column[] cols = new Column[columns.size()];
-      columns.toArray(cols);
-      setColumns(cols);
+    public Table(Database database, int id, String name,ArrayList<Column> columns) {
+        columnMap = schema.getDatabase().newStringMap();
+        initDbObject(database, id, name);
+        Column[] cols = new Column[columns.size()];
+        columns.toArray(cols);
+        setColumns(cols);
     }
     
-    
+  
     public boolean canDrop() {
         return true;
     }
@@ -124,9 +127,8 @@ public class Table extends DbObject implements Serializable {
         columnMap.put(newName, column);
     }
     
-    @Override
     public int getType() {
-        return DbObject.TABLE_OR_VIEW;
+        return Dbobject.table;
     }
     
     
